@@ -5,56 +5,40 @@ import utilities.coordinates as coordinates
 class Directory(QtGui.QGraphicsPixmapItem):
 	_directory_open = False
 	_version_show = False
-	_children = []
 	pos_right_corner = (0, 0)
 	pos_bottom_mid = (0, 0)
 	pos_left_mid = (0, 0)
 	margin_x = 50
 	margin_y = 50
 	
-	def __init__(self, parent = None):
+	def __init__(self, parent_directory = None, parent = None):
 		super(Directory, self).__init__(parent)
 		self.resource_manager = resources.resource_manager.ResourceManager()
-		self.parent = parent
+		self.children = []
 		
-		if(parent is None):
+		if(parent_directory is None):
 			self.setOffset(0, 0)
-			self.scene = QtGui.QGraphicsScene()
 			self.open()
 		else:
-			self.setOffset(parent.pos_right_corner[0] + self.margin_x, parent.pos_right_corner[1] + self.margin_y)
-			self.scene = parent.scene
+			if(len(parent_directory.children) == 0):
+				self.setOffset(parent_directory.pos_right_corner[0] + self.margin_x, parent_directory.pos_right_corner[1] + self.margin_y)
+			else:
+				self.setOffset(parent_directory.pos_right_corner[0] + self.margin_x, parent_directory.children[-1].pos_right_corner[1] + self.margin_y)
+			
+			parent_directory.children.append(self)
 			self.close()
 		
 		self.setScale(0.3)
-		self.scene.addItem(self)
 		self.pos_right_corner = coordinates.Coordinates.bottom_right(self)
 		self.pos_bottom_mid = coordinates.Coordinates.bottom_mid(self)
-		self.pos_left_mid = coordinates.Coordinates.left_mid(self) 
-	
-	def get_scene(self):
-		return self.scene
-	
-	def add_directory(self):
-		child = Directory(parent = self)
-		print(child)
-		self._children.append(child)
-		self.draw_directory_children()
-	
-	def remove_directory(self, child_directory):
-		self._children.remove(child_directory)
-		self.draw_directory_children()
+		self.pos_left_mid = coordinates.Coordinates.left_mid(self)
 	
 	def draw_directory_children(self):
-		for child in self._children:
-			self.scene.addLine(
-				child.parent.pos_bottom_mid[0], child.parent.pos_bottom_mid[1],
-				child.pos_left_mid[0], child.pos_left_mid[1]
-			)
-	
-	#hide all children here
-	def hide_directory_children(self):
 		pass
+	
+	def hide_directory_children(self):
+		for child in self.children:
+			pass
 	
 	def open(self):
 		self.setPixmap(self.resource_manager.get_resource("directory_open"))
@@ -80,9 +64,6 @@ class Directory(QtGui.QGraphicsPixmapItem):
 			self.open()
 		else:
 			self.close()
-		
-		#is this necessary?
-		super(Directory, self).mouseDoubleClickEvent(event)
 	
 	def contextMenuEvent(self, event):
 		menu = QtGui.QMenu()
@@ -103,11 +84,26 @@ class Directory(QtGui.QGraphicsPixmapItem):
 class MainWindow(QtGui.QGraphicsView):
 	def __init__(self, parent = None):
 		super(MainWindow, self).__init__(parent)
+		scene = QtGui.QGraphicsScene()
 		
 		directory = Directory()
-		directory.add_directory()
-		directory.add_directory()
-		self.setScene(directory.get_scene())
+		sub_dir1 = Directory(parent_directory = directory)
+		sub_dir2 = Directory(parent_directory = directory)
+		sub_dir3 = Directory(parent_directory = directory)
+		sub_dir4 = Directory(parent_directory = directory)
+		sub_dir5 = Directory(parent_directory = directory)
+		
+		sub_dir1_1 = Directory(parent_directory = sub_dir1)
+		
+		scene.addItem(directory)
+		scene.addItem(sub_dir1)
+		scene.addItem(sub_dir2)
+		scene.addItem(sub_dir3)
+		scene.addItem(sub_dir4)
+		scene.addItem(sub_dir5)
+		scene.addItem(sub_dir1_1)
+		
+		self.setScene(scene)
 import sys
 app = QtGui.QApplication(sys.argv)
 main_window = MainWindow()
