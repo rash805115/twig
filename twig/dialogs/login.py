@@ -1,9 +1,9 @@
-import resources.general_resources
+import resources.resource_manager
 from PySide import QtCore, QtGui
 
 class Ui_login_dialog(object):
 	def setupUi(self, login_dialog):
-		resources.general_resources.qInitResources()
+		resource_manager = resources.resource_manager.ResourceManager()
 		
 		login_dialog.setObjectName("login_dialog")
 		login_dialog.resize(453, 300)
@@ -32,7 +32,7 @@ class Ui_login_dialog(object):
 		self.login_logo_label = QtGui.QLabel(login_dialog)
 		self.login_logo_label.setGeometry(QtCore.QRect(220, 30, 201, 101))
 		self.login_logo_label.setText("")
-		self.login_logo_label.setPixmap(QtGui.QPixmap(":/images/images/logo_transparent.png"))
+		self.login_logo_label.setPixmap(resource_manager.get_resource("logo"))
 		self.login_logo_label.setObjectName("login_logo_label")
 
 		self.retranslateUi(login_dialog)
