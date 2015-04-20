@@ -44,7 +44,7 @@ class Folder(QtGui.QGraphicsWidget):
 			
 			for i in range(0, self.children_widget.layout().count()):
 				child = self.children_widget.layout().itemAt(i)
-				child_y = self.children_widget.geometry().top() + child.geometry.top() + self.leaf.geometry().height() / 2
+				child_y = self.children_widget.geometry().top() + child.geometry().top() + self.leaf.geometry().height() / 2
 				painter.drawLine(self.offset / 2, child_y, self.offset, child_y)
 
 class DefaultView(QtGui.QGraphicsView):
