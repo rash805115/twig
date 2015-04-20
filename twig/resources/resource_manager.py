@@ -20,4 +20,5 @@ class ResourceManager(metaclass = utilities.singleton.Singleton):
 			return None
 		
 		pixmap = QtGui.QPixmap(self._resource_mapping[resource_name])
+		pixmap = pixmap.scaledToWidth(50)
 		return pixmap
