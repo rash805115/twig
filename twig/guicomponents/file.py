@@ -1,16 +1,22 @@
 import resources.resource_manager
 import PySide.QtGui as QtGui
+import PySide.QtCore as QtCore
 
 class File(QtGui.QLabel):
+	file_signal = QtCore.Signal()
+	file_version_signal = QtCore.Signal(bool)
+	file_info_signal = QtCore.Signal()
+	
 	_version_show = False
 	_stylesheet = """
 		QLabel {
 			background-color: white;
 		}
 	"""
-	def __init__(self):
+	def __init__(self, path):
 		QtGui.QLabel.__init__(self)
 		self.resource_manager = resources.resource_manager.ResourceManager()
+		self.path = path
 		
 		self.parent_directory = None
 		self.setPixmap(self.resource_manager.get_resource("file"))
@@ -29,17 +35,18 @@ class File(QtGui.QLabel):
 			parent.children.append(self)
 	
 	def open(self):
-		#signal to open the file using system exec.
-		pass
+		self.file_signal.emit()
 	
 	def show_versions(self):
 		self._version_show = True
+		self.file_version_signal.emit(True)
 	
 	def hide_versions(self):
 		self._version_show = False
+		self.file_version_signal.emit(False)
 	
 	def get_info(self):
-		pass
+		self.file_info_signal.emit()
 	
 	def mouseDoubleClickEvent(self, event):
 		self.open()
@@ -55,3 +62,8 @@ class File(QtGui.QLabel):
 		
 		menu.addAction(QtGui.QAction("Get Info", menu, triggered = self.get_info))
 		menu.exec_(QtGui.QCursor.pos())
+	
+	def paintEvent(self, paint_event):
+		QtGui.QLabel.paintEvent(self, paint_event)
+		painter = QtGui.QPainter(self)
+		painter.drawText(self.pixmap().rect().bottomRight().x(), self.pixmap().rect().bottomRight().y(), self.path)

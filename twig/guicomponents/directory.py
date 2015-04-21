@@ -1,7 +1,12 @@
 import resources.resource_manager
 import PySide.QtGui as QtGui
+import PySide.QtCore as QtCore
 
 class Directory(QtGui.QLabel):
+	directory_signal = QtCore.Signal(bool)
+	dir_version_signal = QtCore.Signal(bool)
+	dir_info_signal = QtCore.Signal()
+	
 	_directory_open = False
 	_version_show = False
 	_stylesheet = """
@@ -9,9 +14,10 @@ class Directory(QtGui.QLabel):
 			background-color: white;
 		}
 	"""
-	def __init__(self):
+	def __init__(self, path):
 		QtGui.QLabel.__init__(self)
 		self.resource_manager = resources.resource_manager.ResourceManager()
+		self.path = path
 		
 		self.parent_directory = None
 		self.children = []
@@ -34,19 +40,23 @@ class Directory(QtGui.QLabel):
 	def open(self):
 		self.setPixmap(self.resource_manager.get_resource("directory_open"))
 		self._directory_open = True
+		self.directory_signal.emit(True)
 	
 	def close(self):
 		self.setPixmap(self.resource_manager.get_resource("directory_close"))
 		self._directory_open = False
+		self.directory_signal.emit(False)
 	
 	def show_versions(self):
 		self._version_show = True
+		self.dir_version_signal.emit(True)
 	
 	def hide_versions(self):
 		self._version_show = False
+		self.dir_version_signal.emit(False)
 	
 	def get_info(self):
-		pass
+		self.dir_info_signal.emit()
 	
 	def mouseDoubleClickEvent(self, event):
 		if(self._directory_open is False):
@@ -69,3 +79,8 @@ class Directory(QtGui.QLabel):
 		
 		menu.addAction(QtGui.QAction("Get Info", menu, triggered = self.get_info))
 		menu.exec_(QtGui.QCursor.pos())
+	
+	def paintEvent(self, paint_event):
+		QtGui.QLabel.paintEvent(self, paint_event)
+		painter = QtGui.QPainter(self)
+		painter.drawText(self.pixmap().rect().bottomRight().x(), self.pixmap().rect().bottomRight().y(), self.path)
