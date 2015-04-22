@@ -82,8 +82,8 @@ class Folder(QtGui.QGraphicsWidget):
 		print("Showing file info")
 
 class DefaultView(QtGui.QGraphicsView):
-	def __init__(self, parent = None):
-		super(DefaultView, self).__init__(parent)
+	def __init__(self, widget):
+		QtGui.QGraphicsView.__init__(self, widget)
 		
 		self.scene = QtGui.QGraphicsScene()
 		self.root_directory = Directory("/dir1")
@@ -104,10 +104,4 @@ class DefaultView(QtGui.QGraphicsView):
 		
 		self.scene.addItem(Folder(self.root_directory))
 		
-		self.setScene(self.scene)	
-
-import sys
-app = QtGui.QApplication(sys.argv)
-main_window = DefaultView()
-main_window.show()
-app.exec_()
+		self.setScene(self.scene)

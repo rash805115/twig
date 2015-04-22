@@ -1,5 +1,37 @@
 import PySide.QtGui as QtGui
 import PySide.QtCore as QtCore
+from dialogs.mainview.defaultview import DefaultView
+
+class ItemList(QtGui.QListWidget):
+	_stylesheet = """
+		QListWidget {
+			font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
+			font-size: 14px;
+			background-color: #a6a6a6;
+		}
+		
+		QListWidget::item {
+			color: #a6a6a6;
+			background-color: white;
+			padding-top: 10px;
+			padding-bottom: 10px;
+			border-bottom: 1px solid black;
+		}
+		
+		QListWidget::item:selected {
+			color: white;
+			background-color: #5abae1;
+		}
+		
+		QListWidget::item:focus {
+			border: 0px;
+		}
+	"""
+	
+	def __init__(self, widget):
+		QtGui.QListWidget.__init__(self, widget)
+		self.setStyleSheet(self._stylesheet)
+		self.setFocusPolicy(QtCore.Qt.NoFocus)
 
 class MainWindow(QtGui.QMainWindow):
 	def __init__(self):
@@ -12,15 +44,23 @@ class MainWindow(QtGui.QMainWindow):
 		self.central_layout = QtGui.QGridLayout(self.central_widget)
 		
 		toolbar = QtGui.QFrame(self.central_widget)
-		filesystem_list = QtGui.QListWidget(self.central_widget)
-		filesystem_view = QtGui.QGraphicsView(self.central_widget)
+		toolbar.setFrameShape(QtGui.QFrame.StyledPanel)
+		toolbar.setFrameShadow(QtGui.QFrame.Raised)
+		filesystem_list = ItemList(self.central_widget)
+		filesystem_list.setSortingEnabled(True)
+		filesystem_view = DefaultView(self.central_widget)
+		
+		
+		QtGui.QListWidgetItem("The Mountain", filesystem_list)
+		QtGui.QListWidgetItem("Rash Splash", filesystem_list)
+		QtGui.QListWidgetItem("Honey Bunny", filesystem_list)
+		QtGui.QListWidgetItem("File-System 4", filesystem_list)
+		QtGui.QListWidgetItem("File-System 5", filesystem_list)
+		QtGui.QListWidgetItem("File-System 6", filesystem_list)
 		
 		self.central_layout.addWidget(toolbar, 0, 0, 1, 2)
 		self.central_layout.addWidget(filesystem_list, 1, 0)
 		self.central_layout.addWidget(filesystem_view, 1, 1)
-		
-		toolbar.setFrameShape(QtGui.QFrame.StyledPanel)
-		toolbar.setFrameShadow(QtGui.QFrame.Raised)
 		
 		self.central_layout.setColumnMinimumWidth(1, 600)
 		self.central_layout.setColumnStretch(1, 2)
@@ -29,6 +69,7 @@ class MainWindow(QtGui.QMainWindow):
 		
 		self.setCentralWidget(self.central_widget)
 		
+		filesystem_list.itemSelectionChanged.connect(self.change_filesystem)
 		
 		
 		
@@ -72,6 +113,9 @@ class MainWindow(QtGui.QMainWindow):
 		self.action_about_twig.setText(QtGui.QApplication.translate("MainWindow", "About Twig", None, QtGui.QApplication.UnicodeUTF8))
 		self.action_about_bookeeping.setText(QtGui.QApplication.translate("MainWindow", "About BooKeeping", None, QtGui.QApplication.UnicodeUTF8))
 		self.action_twig_help.setText(QtGui.QApplication.translate("MainWindow", "Twig Help", None, QtGui.QApplication.UnicodeUTF8))
+	
+	def change_filesystem(self):
+		print("Changing item")
 
 import sys
 app = QtGui.QApplication(sys.argv)
