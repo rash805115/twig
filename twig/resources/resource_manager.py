@@ -15,10 +15,11 @@ class ResourceManager(metaclass = utilities.singleton.Singleton):
 		resources.general_resources.qInitResources()
 		resources.component_resources.qInitResources()
 	
-	def get_resource(self, resource_name):
+	def get_resource(self, resource_name, scale = True):
 		if(resource_name not in self._resource_mapping):
 			return None
 		
 		pixmap = QtGui.QPixmap(self._resource_mapping[resource_name])
-		pixmap = pixmap.scaledToWidth(50)
+		if scale is True:
+			pixmap = pixmap.scaledToWidth(50)
 		return pixmap
