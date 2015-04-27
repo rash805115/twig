@@ -1,13 +1,12 @@
-import dialogs.login
 import PySide.QtGui as QtGui
+import dialogs.login
+import dialogs.main_window
 import sys
 
-class LoginWindow(QtGui.QDialog, dialogs.login.LoginDialog):
-	def __init__(self, parent = None):
-		super(LoginWindow, self).__init__(parent)
-		self.setup(self)
-
 application = QtGui.QApplication(sys.argv)
-login_window = LoginWindow()
-login_window.show()
-application.exec_()
+login_dialog = dialogs.login.LoginDialog()
+main_window = dialogs.main_window.MainWindow()
+
+if login_dialog.exec_() == QtGui.QDialog.Accepted:
+	main_window.show()
+	application.exec_()

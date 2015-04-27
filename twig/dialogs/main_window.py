@@ -1,8 +1,11 @@
 import PySide.QtGui as QtGui
 import PySide.QtCore as QtCore
-from dialogs.mainview.defaultview import DefaultView
+import dialogs.mainview.defaultview as defaultview
+import pybookeeping.core.communication.connection as connection
+import pybookeeping.core.operation.filesystem as filesystem
+import pybookeeping.core.operation.xray as xray
 
-class ItemList(QtGui.QListWidget):
+class FilesystemList(QtGui.QListWidget):
 	_stylesheet = """
 		QListWidget {
 			font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
@@ -46,9 +49,9 @@ class MainWindow(QtGui.QMainWindow):
 		toolbar = QtGui.QFrame(self.central_widget)
 		toolbar.setFrameShape(QtGui.QFrame.StyledPanel)
 		toolbar.setFrameShadow(QtGui.QFrame.Raised)
-		filesystem_list = ItemList(self.central_widget)
+		filesystem_list = FilesystemList(self.central_widget)
 		filesystem_list.setSortingEnabled(True)
-		filesystem_view = DefaultView(self.central_widget)
+		filesystem_view = defaultview.DefaultView(self.central_widget)
 		
 		
 		QtGui.QListWidgetItem("The Mountain", filesystem_list)
@@ -75,6 +78,7 @@ class MainWindow(QtGui.QMainWindow):
 		
 		
 		self.menubar = QtGui.QMenuBar(self)
+		self.menubar.setNativeMenuBar(True)
 		self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 21))
 		self.menu_twig = QtGui.QMenu(self.menubar)
 		self.menu_help = QtGui.QMenu(self.menubar)
@@ -116,9 +120,3 @@ class MainWindow(QtGui.QMainWindow):
 	
 	def change_filesystem(self):
 		print("Changing item")
-
-import sys
-app = QtGui.QApplication(sys.argv)
-main_window = MainWindow()
-main_window.show()
-app.exec_()
