@@ -1,8 +1,10 @@
 import PySide.QtGui as QtGui
 import PySide.QtCore as QtCore
+import service.globals as global_variables
 import dialogs.mainview.defaultview as defaultview
 import pybookeeping.core.communication.connection as connection
 import pybookeeping.core.operation.filesystem as filesystem
+import pybookeeping.core.operation.commit as commit
 import pybookeeping.core.operation.xray as xray
 
 class FilesystemList(QtGui.QListWidget):
@@ -35,6 +37,31 @@ class FilesystemList(QtGui.QListWidget):
 		QtGui.QListWidget.__init__(self, widget)
 		self.setStyleSheet(self._stylesheet)
 		self.setFocusPolicy(QtCore.Qt.NoFocus)
+		
+		self.connection_obj = connection.Connection()
+		self.filesystem_obj = filesystem.Filesystem(self.connection_obj)
+		filesystem_list = self.filesystem_obj.get_all_filesystem(global_variables._current_user)
+		filesystem_dict = {}
+		
+		for filesystem_info in filesystem_list:
+			filesystem_nodeid = filesystem_info["nodeId"]
+			filesystem_name = filesystem_info["filesystemId"]
+			
+			filesystem_dict[filesystem_name] = filesystem_nodeid
+			QtGui.QListWidgetItem(filesystem_name, self)
+	
+	def contextMenuEvent(self, event):
+		menu = QtGui.QMenu()
+		menu.addAction(QtGui.QAction("Create New Filesystem", menu, triggered = self.create_new))
+		menu.exec_(QtGui.QCursor.pos())
+	
+	def create_new(self):
+		open_dialog = QtGui.QFileDialog.getExistingDirectory(self, "Select a directory", ".")
+		new_filesystem_path = open_dialog[0]
+		
+		commit_obj = commit.Commit(self.connection_obj, "test commit")
+		self.filesystem_obj.create_filesystem(commit_obj, global_variables._current_user, new_filesystem_path[0 : 10])
+		print(commit_obj.commit())
 
 class MainWindow(QtGui.QMainWindow):
 	def __init__(self):
@@ -52,14 +79,6 @@ class MainWindow(QtGui.QMainWindow):
 		filesystem_list = FilesystemList(self.central_widget)
 		filesystem_list.setSortingEnabled(True)
 		filesystem_view = defaultview.DefaultView(self.central_widget)
-		
-		
-		QtGui.QListWidgetItem("The Mountain", filesystem_list)
-		QtGui.QListWidgetItem("Rash Splash", filesystem_list)
-		QtGui.QListWidgetItem("Honey Bunny", filesystem_list)
-		QtGui.QListWidgetItem("File-System 4", filesystem_list)
-		QtGui.QListWidgetItem("File-System 5", filesystem_list)
-		QtGui.QListWidgetItem("File-System 6", filesystem_list)
 		
 		self.central_layout.addWidget(toolbar, 0, 0, 1, 2)
 		self.central_layout.addWidget(filesystem_list, 1, 0)

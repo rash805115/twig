@@ -1,4 +1,5 @@
 import resources.resource_manager
+import service.globals as global_variables
 from PySide import QtCore, QtGui
 
 class LoginDialog(QtGui.QDialog):
@@ -57,4 +58,5 @@ class LoginDialog(QtGui.QDialog):
 	
 	def login(self):
 		if self.username_text.text() == "john" and self.password_text.text() == "aaa":
+			global_variables._current_user = self.username_text.text() 
 			self.done(QtGui.QDialog.Accepted)
