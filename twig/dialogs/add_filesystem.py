@@ -26,12 +26,12 @@ class AddFilesystem(QtGui.QDialog):
 		commit_cancel_button = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
 		
 		layout = QtGui.QGridLayout()
-		layout.addWidget(name_label, 0, 0)
-		layout.addWidget(self.name_lineedit, 0, 1)
-		layout.addWidget(choose_folder_label, 1, 0)
-		layout.addWidget(choose_folder_button, 1, 1)
-		layout.addWidget(chosen_path_label, 2, 0)
-		layout.addWidget(self.chosen_path_value_label, 2, 1)
+		layout.addWidget(choose_folder_label, 0, 0)
+		layout.addWidget(choose_folder_button, 0, 1)
+		layout.addWidget(chosen_path_label, 1, 0)
+		layout.addWidget(self.chosen_path_value_label, 1, 1)
+		layout.addWidget(name_label, 2, 0)
+		layout.addWidget(self.name_lineedit, 2, 1)
 		layout.addWidget(commit_label, 3, 0)
 		layout.addWidget(self.commit_lineedit, 3, 1)
 		layout.addWidget(commit_cancel_button, 4, 1)
@@ -47,11 +47,11 @@ class AddFilesystem(QtGui.QDialog):
 	
 	def commit(self):
 		if not NameValidation.validate_name(self.name_lineedit.text()):
-			QtGui.QMessageBox.critical(self, "ERROR", "Incorrect Filesystem name!")
+			QtGui.QMessageBox.critical(self, "ERROR", "Incorrect filesystem name!")
 		elif len(self.chosen_path_value_label.text().strip()) == 0:
 			QtGui.QMessageBox.critical(self, "ERROR", "No directory has been chosen!")
 		elif not NameValidation.validate_name(self.commit_lineedit.text()):
-			QtGui.QMessageBox.critical(self, "ERROR", "Incorrect Commit Id!")
+			QtGui.QMessageBox.critical(self, "ERROR", "Incorrect commit id!")
 		else:
 			new_connection = connection.Connection()
 			new_commit = commit.Commit(new_connection, self.commit_lineedit.text())
@@ -63,4 +63,3 @@ class AddFilesystem(QtGui.QDialog):
 				self.done(QtGui.QDialog.Accepted)
 			except ValueError as error:
 				QtGui.QMessageBox.critical(self, "ERROR", error.args[1]["data"]["filesystem_create"]["operation_message"])
-		
