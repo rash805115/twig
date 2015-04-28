@@ -3,5 +3,6 @@
     <file>images/directory_close_transparent.png</file>
     <file>images/directory_open_transparent.png</file>
     <file>images/general_file_transparent.png</file>
+    <file>images/add_filesystem_transparent.png</file>
   </qresource>
 </RCC>

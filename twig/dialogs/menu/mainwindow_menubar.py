@@ -2,12 +2,14 @@ import PySide.QtGui as QtGui
 import PySide.QtCore as QtCore
 import dialogs.menu.menu as menu
 import service.globals as global_variables
+import signals.signals as signals
 
 class MainWindowMenubar(QtGui.QMenuBar):
 	def __init__(self, widget):
 		QtGui.QMenuBar.__init__(self, widget)
 		self.setNativeMenuBar(False)
 		self.setGeometry(QtCore.QRect(0, 0, 800, 21))
+		self.twig_signal = signals.TwigSignals().twig_signal
 		
 		twig_menu = menu.Menu(self, global_variables._app_name)
 		twig_menu.add_action("Preferences", QtGui.QAction(self, triggered = self.preferences_clicked))
@@ -34,10 +36,10 @@ class MainWindowMenubar(QtGui.QMenuBar):
 		pass
 	
 	def quit_clicked(self):
-		pass
+		self.twig_signal.close_mainwindow.emit()
 	
 	def addfilesystem_clicked(self):
-		pass
+		self.twig_signal.add_filesystem.emit()
 	
 	def abouttwig_clicked(self):
 		pass

@@ -4,6 +4,7 @@ import dialogs.menu.mainwindow_menubar as mainwindow_menubar
 import guicomponents.filesystem_list
 import guicomponents.toolbar
 import service.globals as global_variables
+import signals.signals as signals
 
 class MainWindow(QtGui.QMainWindow):
 	def __init__(self):
@@ -32,3 +33,9 @@ class MainWindow(QtGui.QMainWindow):
 		
 		self.setStatusBar(QtGui.QStatusBar(self))
 		self.setCentralWidget(central_widget)
+		
+		twig_singal = signals.TwigSignals().twig_signal
+		twig_singal.close_mainwindow.connect(self.close_window)
+	
+	def close_window(self):
+		self.close()

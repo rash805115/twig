@@ -4,6 +4,7 @@ import pybookeeping.core.communication.connection as connection
 import pybookeeping.core.operation.filesystem as filesystem
 import service.globals as global_variables
 import dialogs.add_filesystem as add_filesystem
+import signals.signals as signals
 import json
 
 class FilesystemList(QtGui.QListWidget):
@@ -38,6 +39,8 @@ class FilesystemList(QtGui.QListWidget):
 		self.setStyleSheet(self._stylesheet)
 		self.setFocusPolicy(QtCore.Qt.NoFocus)
 		
+		twig_signal = signals.TwigSignals().twig_signal
+		twig_signal.add_filesystem.connect(self.create_new)
 		self.itemSelectionChanged.connect(self.item_changed)
 		
 		self.filesystem = filesystem.Filesystem(connection.Connection())
