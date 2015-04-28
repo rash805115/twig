@@ -1,7 +1,9 @@
 import PySide.QtGui as QtGui
-import PySide.QtCore as QtCore
 import dialogs.mainview.defaultview as defaultview
+import dialogs.menu.mainwindow_menubar as mainwindow_menubar
 import guicomponents.filesystem_list
+import guicomponents.toolbar
+import service.globals as global_variables
 
 class MainWindow(QtGui.QMainWindow):
 	def __init__(self):
@@ -9,70 +11,24 @@ class MainWindow(QtGui.QMainWindow):
 		self.resize(800, 600)
 		self.setMinimumHeight(600)
 		self.setMinimumWidth(800)
+		self.setWindowTitle(global_variables._app_name)
 		
-		self.central_widget = QtGui.QWidget()
-		self.central_layout = QtGui.QGridLayout(self.central_widget)
+		central_widget = QtGui.QWidget()
+		central_layout = QtGui.QGridLayout(central_widget)
 		
-		toolbar = QtGui.QFrame(self.central_widget)
-		toolbar.setFrameShape(QtGui.QFrame.StyledPanel)
-		toolbar.setFrameShadow(QtGui.QFrame.Raised)
-		filesystem_list = guicomponents.filesystem_list.FilesystemList(self.central_widget)
-		filesystem_view = defaultview.DefaultView(self.central_widget)
+		mainwindow_menubar.MainWindowMenubar(central_widget)
+		toolbar = guicomponents.toolbar.Toolbar(central_widget)
+		filesystem_list = guicomponents.filesystem_list.FilesystemList(central_widget)
+		view = defaultview.DefaultView(central_widget)
 		
-		self.central_layout.addWidget(toolbar, 0, 0, 1, 2)
-		self.central_layout.addWidget(filesystem_list, 1, 0)
-		self.central_layout.addWidget(filesystem_view, 1, 1)
+		central_layout.addWidget(toolbar, 0, 0, 1, 2)
+		central_layout.addWidget(filesystem_list, 1, 0)
+		central_layout.addWidget(view, 1, 1)
 		
-		self.central_layout.setColumnMinimumWidth(1, 600)
-		self.central_layout.setColumnStretch(1, 2)
-		self.central_layout.setHorizontalSpacing(0)
-		self.central_layout.setRowMinimumHeight(0, 30)
+		central_layout.setColumnMinimumWidth(1, 600)
+		central_layout.setColumnStretch(1, 2)
+		central_layout.setHorizontalSpacing(0)
+		central_layout.setRowMinimumHeight(0, 30)
 		
-		self.setCentralWidget(self.central_widget)
-		
-		
-		
-		
-		self.menubar = QtGui.QMenuBar(self)
-		self.menubar.setNativeMenuBar(True)
-		self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 21))
-		self.menu_twig = QtGui.QMenu(self.menubar)
-		self.menu_help = QtGui.QMenu(self.menubar)
-		self.setMenuBar(self.menubar)
-		self.statusbar = QtGui.QStatusBar(self)
-		self.setStatusBar(self.statusbar)
-		self.action_add_filesystem = QtGui.QAction(self)
-		self.action_exit = QtGui.QAction(self)
-		self.action_preferences = QtGui.QAction(self)
-		self.action_sign_out = QtGui.QAction(self)
-		self.action_about_twig = QtGui.QAction(self)
-		self.action_about_bookeeping = QtGui.QAction(self)
-		self.action_twig_help = QtGui.QAction(self)
-		self.menu_twig.addAction(self.action_add_filesystem)
-		self.menu_twig.addAction(self.action_preferences)
-		self.menu_twig.addSeparator()
-		self.menu_twig.addAction(self.action_sign_out)
-		self.menu_twig.addAction(self.action_exit)
-		self.menu_help.addAction(self.action_twig_help)
-		self.menu_help.addSeparator()
-		self.menu_help.addAction(self.action_about_twig)
-		self.menu_help.addAction(self.action_about_bookeeping)
-		self.menubar.addAction(self.menu_twig.menuAction())
-		self.menubar.addAction(self.menu_help.menuAction())
-		
-		self.retranslateUi(self)
-
-	def retranslateUi(self, MainWindow):
-		MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "MainWindow", None, QtGui.QApplication.UnicodeUTF8))
-		self.menu_twig.setTitle(QtGui.QApplication.translate("MainWindow", "Twig", None, QtGui.QApplication.UnicodeUTF8))
-		self.menu_help.setTitle(QtGui.QApplication.translate("MainWindow", "Help", None, QtGui.QApplication.UnicodeUTF8))
-		self.action_add_filesystem.setText(QtGui.QApplication.translate("MainWindow", "Add Filesystem", None, QtGui.QApplication.UnicodeUTF8))
-		self.action_exit.setText(QtGui.QApplication.translate("MainWindow", "Exit", None, QtGui.QApplication.UnicodeUTF8))
-		self.action_preferences.setText(QtGui.QApplication.translate("MainWindow", "Preferences", None, QtGui.QApplication.UnicodeUTF8))
-		self.action_sign_out.setText(QtGui.QApplication.translate("MainWindow", "Sign Out", None, QtGui.QApplication.UnicodeUTF8))
-		self.action_about_twig.setText(QtGui.QApplication.translate("MainWindow", "About Twig", None, QtGui.QApplication.UnicodeUTF8))
-		self.action_about_bookeeping.setText(QtGui.QApplication.translate("MainWindow", "About BooKeeping", None, QtGui.QApplication.UnicodeUTF8))
-		self.action_twig_help.setText(QtGui.QApplication.translate("MainWindow", "Twig Help", None, QtGui.QApplication.UnicodeUTF8))
-	
-	def change_filesystem(self):
-		print("Changing item")
+		self.setStatusBar(QtGui.QStatusBar(self))
+		self.setCentralWidget(central_widget)
