@@ -1,6 +1,7 @@
 import resources.resource_manager
 import PySide.QtGui as QtGui
 import PySide.QtCore as QtCore
+import json
 
 class Directory(QtGui.QLabel):
 	directory_signal = QtCore.Signal(bool)
@@ -14,10 +15,11 @@ class Directory(QtGui.QLabel):
 			background-color: white;
 		}
 	"""
-	def __init__(self, path):
+	def __init__(self, properties):
 		QtGui.QLabel.__init__(self)
 		self.resource_manager = resources.resource_manager.ResourceManager()
-		self.path = path
+		self.setToolTip(json.dumps(properties, indent = 8))
+		self.properties = properties
 		
 		self.parent_directory = None
 		self.children = []
@@ -83,4 +85,4 @@ class Directory(QtGui.QLabel):
 	def paintEvent(self, paint_event):
 		QtGui.QLabel.paintEvent(self, paint_event)
 		painter = QtGui.QPainter(self)
-		painter.drawText(self.pixmap().rect().bottomRight().x(), self.pixmap().rect().bottomRight().y(), self.path)
+		painter.drawText(self.pixmap().rect().bottomRight().x(), self.pixmap().rect().bottomRight().y(), self.properties["directoryName"])

@@ -1,5 +1,8 @@
 import PySide.QtGui as QtGui
 import PySide.QtCore as QtCore
+import signals.signals as signals
+import pybookeeping.core.communication.connection as connection
+import pybookeeping.core.operation.xray as xray
 from guicomponents.directory import Directory
 from guicomponents.file import File
 
@@ -31,7 +34,6 @@ class Folder(QtGui.QGraphicsWidget):
 		
 		self.leaf = QtGui.QGraphicsProxyWidget()
 		self.leaf.setWidget(widget)
-		self.leaf.setToolTip(widget.path)
 		
 		main_layout.addItem(self.leaf)
 		main_layout.addItem(self.children_widget)
@@ -84,24 +86,49 @@ class Folder(QtGui.QGraphicsWidget):
 class DefaultView(QtGui.QGraphicsView):
 	def __init__(self, widget):
 		QtGui.QGraphicsView.__init__(self, widget)
+		self.twig_signal = signals.TwigSignals().twig_signal
 		
 		self.scene = QtGui.QGraphicsScene()
-		self.root_directory = Directory("/dir1")
-		self.child_directory1 = Directory("/dir1/dir1.1")
-		self.child_directory2 = Directory("/dir1/dir1.1")
-		
-		file1 = File("/dir1/dir1.1/file1.1")
-		file2 = File("/dir1/file1")
-		
-		self.child_directory1.set_parent(self.root_directory)
-		self.child_directory2.set_parent(self.root_directory)
-		file1.set_parent(self.child_directory1)
-		file2.set_parent(self.root_directory)
-		
-		#self.scene.addItem(self.root_directory)
-		#self.scene.addItem(self.child_directory1)
-		#self.scene.addItem(self.child_directory2)
-		
-		self.scene.addItem(Folder(self.root_directory))
-		
 		self.setScene(self.scene)
+		
+		self.twig_signal.filesystem_list_changed.connect(self.draw_root)
+# 		self.child_directory1 = Directory("/dir1/dir1.1")
+# 		self.child_directory2 = Directory("/dir1/dir1.1")
+# 		
+# 		file1 = File("/dir1/dir1.1/file1.1")
+# 		file2 = File("/dir1/file1")
+		
+# 		self.child_directory1.set_parent(self.root_directory)
+# 		self.child_directory2.set_parent(self.root_directory)
+# 		file1.set_parent(self.child_directory1)
+# 		file2.set_parent(self.root_directory)
+	
+	def draw_root(self, filesystem_info):
+		filesystem_rootid = filesystem_info["rootNodeId"]
+		properties = {
+			"directoryName": "Root Directory",
+			"directoryPath": "/",
+			"nodeId": filesystem_rootid
+		}
+		
+		self.root_directory = Directory(properties)
+		self.scene.addItem(Folder(self.root_directory))
+		self.draw_children(self.root_directory)
+	
+	def draw_children(self, parent):
+		parent_nodeid = parent.properties["nodeId"]
+		new_xray = xray.Xray(connection.Connection())
+		children = new_xray.xray_node(parent_nodeid)
+		
+		for child in children:
+			is_directory = False
+			try:
+				child["directoryName"]
+				is_directory = True
+			except KeyError:
+				is_directory = False
+			
+			if is_directory is True:
+				Directory(child).set_parent(parent)
+			else:
+				File(child).set_parent(parent)

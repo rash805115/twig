@@ -38,9 +38,9 @@ class FilesystemList(QtGui.QListWidget):
 		self.setSortingEnabled(True)
 		self.setStyleSheet(self._stylesheet)
 		self.setFocusPolicy(QtCore.Qt.NoFocus)
+		self.twig_signal = signals.TwigSignals().twig_signal
 		
-		twig_signal = signals.TwigSignals().twig_signal
-		twig_signal.add_filesystem.connect(self.create_new)
+		self.twig_signal.add_filesystem.connect(self.create_new)
 		self.itemSelectionChanged.connect(self.item_changed)
 		
 		self.filesystem = filesystem.Filesystem(connection.Connection())
@@ -74,4 +74,6 @@ class FilesystemList(QtGui.QListWidget):
 			self.display_children()
 	
 	def item_changed(self):
-		print("item has changed")
+		current_filesystem = self.currentItem().text()
+		current_filesytem_info = self.filesystems[current_filesystem]
+		self.twig_signal.filesystem_list_changed.emit(current_filesytem_info)
