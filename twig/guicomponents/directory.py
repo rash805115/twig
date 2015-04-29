@@ -25,11 +25,12 @@ class Directory(QtGui.QLabel):
 		self.children = []
 		
 		self.setStyleSheet(self._stylesheet)
-		self.open()
+		self.close()
 	
 	def set_parent(self, parent):
 		try:
-			parent.children.remove(self)
+			if self.parent_directory is not None:
+				self.parent_directory.children.remove(self)
 		except ValueError:
 			pass
 		

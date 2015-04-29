@@ -6,34 +6,34 @@ import pybookeeping.core.operation.xray as xray
 from guicomponents.directory import Directory
 from guicomponents.file import File
 
-class Folder(QtGui.QGraphicsWidget):
+class Entity(QtGui.QGraphicsWidget):
 	def __init__(self, widget):
 		QtGui.QGraphicsWidget.__init__(self)
 		self.offset = 50
+		self.entity = widget
 		
-		children_layout = QtGui.QGraphicsLinearLayout(QtCore.Qt.Vertical)
-		children_layout.setContentsMargins(self.offset, 0, 0, 0)
+		self.connect_children(self.entity)
 		
-		if widget.__class__.__name__ is "Directory":
-			widget.directory_signal.connect(self.toggle_children)
-			widget.dir_version_signal.connect(self.toggle_dir_version)
-			widget.dir_info_signal.connect(self.show_dir_info)
-			
-			for child in widget.children:
-				children_layout.addItem(Folder(child))
+		self.children_layout = QtGui.QGraphicsLinearLayout(QtCore.Qt.Vertical)
+		self.children_layout.setContentsMargins(self.offset, 0, 0, 0)
+		
+		if self.entity.__class__.__name__ is "Directory":
+			self.entity.directory_signal.connect(self.toggle_children)
+			self.entity.dir_version_signal.connect(self.toggle_dir_version)
+			self.entity.dir_info_signal.connect(self.show_dir_info)
 		else:
-			widget.file_signal.connect(self.open_file)
-			widget.file_version_signal.connect(self.toggle_file_version)
-			widget.file_info_signal.connect(self.show_file_info)
+			self.entity.file_signal.connect(self.open_file)
+			self.entity.file_version_signal.connect(self.toggle_file_version)
+			self.entity.file_info_signal.connect(self.show_file_info)
 		
 		self.children_widget = QtGui.QGraphicsWidget()
-		self.children_widget.setLayout(children_layout)
+		self.children_widget.setLayout(self.children_layout)
 		
 		main_layout = QtGui.QGraphicsLinearLayout(QtCore.Qt.Vertical)
 		main_layout.setContentsMargins(0, 0, 0, 0)
 		
 		self.leaf = QtGui.QGraphicsProxyWidget()
-		self.leaf.setWidget(widget)
+		self.leaf.setWidget(self.entity)
 		
 		main_layout.addItem(self.leaf)
 		main_layout.addItem(self.children_widget)
@@ -52,13 +52,19 @@ class Folder(QtGui.QGraphicsWidget):
 				child_y = self.children_widget.geometry().top() + child.geometry().top() + self.leaf.geometry().height() / 2
 				painter.drawLine(self.offset / 2, child_y, self.offset, child_y)
 	
-	def toggle_children(self, directory_open):
-		if(self.children_widget.isVisible()):
-			self.layout().removeItem(self.children_widget)
-			self.children_widget.hide()
-		else:
+	def toggle_children(self, open_directory):
+		if open_directory:
+			for child in self.entity.children:
+				self.children_layout.addItem(Entity(child))
+			
 			self.children_widget.show()
 			self.layout().insertItem(1, self.children_widget)
+		else:
+			for child in self.entity.children:
+				child.set_parent(None)
+				
+			self.layout().removeItem(self.children_widget)
+			self.children_widget.hide()
 		
 		self.update()
 	
@@ -82,40 +88,8 @@ class Folder(QtGui.QGraphicsWidget):
 	
 	def show_file_info(self):
 		print("Showing file info")
-
-class DefaultView(QtGui.QGraphicsView):
-	def __init__(self, widget):
-		QtGui.QGraphicsView.__init__(self, widget)
-		self.twig_signal = signals.TwigSignals().twig_signal
-		
-		self.scene = QtGui.QGraphicsScene()
-		self.setScene(self.scene)
-		
-		self.twig_signal.filesystem_list_changed.connect(self.draw_root)
-# 		self.child_directory1 = Directory("/dir1/dir1.1")
-# 		self.child_directory2 = Directory("/dir1/dir1.1")
-# 		
-# 		file1 = File("/dir1/dir1.1/file1.1")
-# 		file2 = File("/dir1/file1")
-		
-# 		self.child_directory1.set_parent(self.root_directory)
-# 		self.child_directory2.set_parent(self.root_directory)
-# 		file1.set_parent(self.child_directory1)
-# 		file2.set_parent(self.root_directory)
 	
-	def draw_root(self, filesystem_info):
-		filesystem_rootid = filesystem_info["rootNodeId"]
-		properties = {
-			"directoryName": "Root Directory",
-			"directoryPath": "/",
-			"nodeId": filesystem_rootid
-		}
-		
-		self.root_directory = Directory(properties)
-		self.scene.addItem(Folder(self.root_directory))
-		self.draw_children(self.root_directory)
-	
-	def draw_children(self, parent):
+	def connect_children(self, parent):
 		parent_nodeid = parent.properties["nodeId"]
 		new_xray = xray.Xray(connection.Connection())
 		children = new_xray.xray_node(parent_nodeid)
@@ -132,3 +106,24 @@ class DefaultView(QtGui.QGraphicsView):
 				Directory(child).set_parent(parent)
 			else:
 				File(child).set_parent(parent)
+
+class DefaultView(QtGui.QGraphicsView):
+	def __init__(self, widget):
+		QtGui.QGraphicsView.__init__(self, widget)
+		self.twig_signal = signals.TwigSignals().twig_signal
+		
+		self.scene = QtGui.QGraphicsScene()
+		self.setScene(self.scene)
+		
+		self.twig_signal.filesystem_list_changed.connect(self.draw_root)
+	
+	def draw_root(self, filesystem_info):
+		filesystem_rootid = filesystem_info["rootNodeId"]
+		properties = {
+			"directoryName": "Root Directory",
+			"directoryPath": "/",
+			"nodeId": filesystem_rootid
+		}
+		
+		self.root_directory = Directory(properties)
+		self.scene.addItem(Entity(self.root_directory))

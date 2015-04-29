@@ -26,7 +26,8 @@ class File(QtGui.QLabel):
 	
 	def set_parent(self, parent):
 		try:
-			parent.children.remove(self)
+			if self.parent_directory is not None:
+				self.parent_directory.children.remove(self)
 		except ValueError:
 			pass
 		
