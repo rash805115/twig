@@ -3,9 +3,11 @@ import PySide.QtCore as QtCore
 import pybookeeping.core.communication.connection as connection
 import pybookeeping.core.operation.filesystem as filesystem
 import service.globals as global_variables
+import guicomponents.filesystem_item as filesystem_item
 import dialogs.add_filesystem as add_filesystem
 import signals.signals as signals
 import json
+import functools
 
 class FilesystemList(QtGui.QListWidget):
 	_stylesheet = """
@@ -44,27 +46,27 @@ class FilesystemList(QtGui.QListWidget):
 		self.itemSelectionChanged.connect(self.item_changed)
 		
 		self.filesystem = filesystem.Filesystem(connection.Connection())
-		self.filesystems = {}
 		self.display_children()
 	
 	def display_children(self):
 		for filesystem_info in self.filesystem.get_all_filesystem(global_variables._current_user):
-			filesystem_name = filesystem_info["filesystemId"]
-			self.filesystems[filesystem_name] = filesystem_info
-			
 			item_tooltip = json.dumps(filesystem_info, indent = 8)
-			item = QtGui.QListWidgetItem(filesystem_name, self)
+			item = filesystem_item.FilesytemItem(filesystem_info, self)
 			item.setToolTip(item_tooltip)
 	
 	def remove_children(self):
 		while self.count() > 0:
 			self.takeItem(0)
-		
-		self.filesystems = {}
 	
 	def contextMenuEvent(self, event):
 		menu = QtGui.QMenu()
-		menu.addAction(QtGui.QAction("Create New Filesystem", menu, triggered = self.create_new))
+		
+		item = self.itemAt(event.x(), event.y())
+		if item is None:
+			menu.addAction(QtGui.QAction("Create New Filesystem", menu, triggered = self.create_new))
+		else:
+			menu.addAction(QtGui.QAction("Filesystem Changes", menu, triggered = functools.partial(item.filesystem_change)))
+		
 		menu.exec_(QtGui.QCursor.pos())
 	
 	def create_new(self):
@@ -74,6 +76,5 @@ class FilesystemList(QtGui.QListWidget):
 			self.display_children()
 	
 	def item_changed(self):
-		current_filesystem = self.currentItem().text()
-		current_filesytem_info = self.filesystems[current_filesystem]
+		current_filesytem_info = self.currentItem().filesystem_info
 		self.twig_signal.filesystem_list_changed.emit(current_filesytem_info)
