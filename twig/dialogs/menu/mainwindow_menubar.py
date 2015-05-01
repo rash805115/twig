@@ -1,6 +1,5 @@
 import PySide.QtGui as QtGui
 import PySide.QtCore as QtCore
-import dialogs.menu.menu as menu
 import service.globals as global_variables
 import signals.signals as signals
 
@@ -11,19 +10,19 @@ class MainWindowMenubar(QtGui.QMenuBar):
 		self.setGeometry(QtCore.QRect(0, 0, 800, 21))
 		self.twig_signal = signals.TwigSignals().twig_signal
 		
-		twig_menu = menu.Menu(self, global_variables._app_name)
-		twig_menu.add_action("Preferences", QtGui.QAction(self, triggered = self.preferences_clicked))
+		twig_menu = QtGui.QMenu(global_variables._app_name, parent = self)
+		twig_menu.addAction(QtGui.QAction("Preferences", twig_menu, triggered = self.preferences_clicked))
 		twig_menu.addSeparator()
-		twig_menu.add_action("Sign Out", QtGui.QAction(self, triggered = self.signout_clicked))
-		twig_menu.add_action("Quit", QtGui.QAction(self, triggered = self.quit_clicked))
+		twig_menu.addAction(QtGui.QAction("Sign Out", twig_menu, triggered = self.signout_clicked))
+		twig_menu.addAction(QtGui.QAction("Quit", twig_menu, triggered = self.quit_clicked))
 		
-		filesystem_menu = menu.Menu(self, "Filesystem")
-		filesystem_menu.add_action("Add Filesystem", QtGui.QAction(self, triggered = self.addfilesystem_clicked))
+		filesystem_menu = QtGui.QMenu("Filesystem", parent = self)
+		filesystem_menu.addAction(QtGui.QAction("Add Filesystem", filesystem_menu, triggered = self.addfilesystem_clicked))
 		
-		help_menu = menu.Menu(self, "Help")
-		help_menu.add_action("About Twig", QtGui.QAction(self, triggered = self.abouttwig_clicked))
-		help_menu.add_action("About BooKeeping", QtGui.QAction(self, triggered = self.aboutbookeeping_clicked))
-		help_menu.add_action("About P.O.T.S", QtGui.QAction(self, triggered = self.aboutpots_clicked))
+		help_menu = QtGui.QMenu("Help", parent = self)
+		help_menu.addAction(QtGui.QAction("About Twig", help_menu, triggered = self.abouttwig_clicked))
+		help_menu.addAction(QtGui.QAction("About BooKeeping", help_menu, triggered = self.aboutbookeeping_clicked))
+		help_menu.addAction(QtGui.QAction("About P.O.T.S", help_menu, triggered = self.aboutpots_clicked))
 		
 		self.addAction(twig_menu.menuAction())
 		self.addAction(filesystem_menu.menuAction())
