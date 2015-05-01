@@ -3,8 +3,8 @@ import PySide.QtCore as QtCore
 import signals.signals as signals
 import pybookeeping.core.communication.connection as connection
 import pybookeeping.core.operation.xray as xray
-from guicomponents.directory import Directory
-from guicomponents.file import File
+import dialogs.mainview.default.directory as directory
+import dialogs.mainview.default.file as file
 
 class Entity(QtGui.QGraphicsWidget):
 	def __init__(self, widget):
@@ -103,9 +103,9 @@ class Entity(QtGui.QGraphicsWidget):
 				is_directory = False
 			
 			if is_directory is True:
-				Directory(child).set_parent(parent)
+				directory.Directory(child).set_parent(parent)
 			else:
-				File(child).set_parent(parent)
+				file.File(child).set_parent(parent)
 
 class DefaultView(QtGui.QGraphicsView):
 	def __init__(self, widget):
@@ -118,6 +118,8 @@ class DefaultView(QtGui.QGraphicsView):
 		self.twig_signal.filesystem_list_changed.connect(self.draw_root)
 	
 	def draw_root(self, filesystem_info):
+		self.scene.clear()
+		
 		filesystem_rootid = filesystem_info["rootNodeId"]
 		properties = {
 			"directoryName": "Root Directory",
@@ -125,5 +127,5 @@ class DefaultView(QtGui.QGraphicsView):
 			"nodeId": filesystem_rootid
 		}
 		
-		self.root_directory = Directory(properties)
+		self.root_directory = directory.Directory(properties)
 		self.scene.addItem(Entity(self.root_directory))

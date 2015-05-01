@@ -3,7 +3,7 @@ import PySide.QtCore as QtCore
 import pybookeeping.core.communication.connection as connection
 import pybookeeping.core.operation.filesystem as filesystem
 import service.globals as global_variables
-import guicomponents.filesystem_item as filesystem_item
+import component.filesystem_item as filesystem_item
 import dialogs.add_filesystem as add_filesystem
 import signals.signals as signals
 import json

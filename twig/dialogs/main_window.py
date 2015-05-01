@@ -1,8 +1,8 @@
 import PySide.QtGui as QtGui
-import dialogs.mainview.defaultview as defaultview
+import dialogs.mainview.default.defaultview as defaultview
 import dialogs.menu.mainwindow_menubar as mainwindow_menubar
-import guicomponents.filesystem_list
-import guicomponents.toolbar
+import component.filesystem_list
+import component.toolbar
 import service.globals as global_variables
 import signals.signals as signals
 
@@ -18,8 +18,8 @@ class MainWindow(QtGui.QMainWindow):
 		central_layout = QtGui.QGridLayout(central_widget)
 		
 		mainwindow_menubar.MainWindowMenubar(central_widget)
-		toolbar = guicomponents.toolbar.Toolbar(central_widget)
-		filesystem_list = guicomponents.filesystem_list.FilesystemList(central_widget)
+		toolbar = component.toolbar.Toolbar(central_widget)
+		filesystem_list = component.filesystem_list.FilesystemList(central_widget)
 		view = defaultview.DefaultView(central_widget)
 		
 		central_layout.addWidget(toolbar, 0, 0, 1, 2)
