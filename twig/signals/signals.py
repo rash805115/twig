@@ -17,5 +17,8 @@ class _TwigSignals(QtCore.QObject):
 	#emit when an item in the filesytem list has been changed.
 	filesystem_list_changed = QtCore.Signal(dict)
 	
+	#emit when the view is changed. Index contains the index of the current selected item.
+	view_changed = QtCore.Signal(int)
+	
 	def __init__(self):
 		QtCore.QObject.__init__(self)

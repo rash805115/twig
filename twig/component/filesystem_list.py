@@ -43,6 +43,7 @@ class FilesystemList(QtGui.QListWidget):
 		self.twig_signal = signals.TwigSignals().twig_signal
 		
 		self.twig_signal.add_filesystem.connect(self.create_new)
+		self.twig_signal.view_changed.connect(self.item_changed)
 		self.itemSelectionChanged.connect(self.item_changed)
 		
 		self.filesystem = filesystem.Filesystem(connection.Connection())
@@ -77,5 +78,7 @@ class FilesystemList(QtGui.QListWidget):
 			self.display_children()
 	
 	def item_changed(self):
-		current_filesytem_info = self.currentItem().filesystem_info
-		self.twig_signal.filesystem_list_changed.emit(current_filesytem_info)
+		current_item = self.currentItem()
+		if current_item is not None:
+			current_filesytem_info = self.currentItem().filesystem_info
+			self.twig_signal.filesystem_list_changed.emit(current_filesytem_info)
