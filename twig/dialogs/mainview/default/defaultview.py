@@ -114,6 +114,7 @@ class DefaultView(QtGui.QGraphicsView):
 		
 		self.scene = QtGui.QGraphicsScene()
 		self.setScene(self.scene)
+		self.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
 		
 		self.twig_signal.filesystem_list_changed.connect(self.draw_root)
 	
