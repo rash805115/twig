@@ -22,10 +22,10 @@ class MainWindow(QtGui.QMainWindow):
 		self.commitview = commitview.CommitView(central_widget)
 		
 		mainwindow_menubar.MainWindowMenubar(central_widget)
-		toolbar = component.toolbar.Toolbar(central_widget)
+		self.toolbar = component.toolbar.Toolbar(central_widget)
 		filesystem_list = component.filesystem_list.FilesystemList(central_widget)
 		
-		self.central_layout.addWidget(toolbar, 0, 0, 1, 2)
+		self.central_layout.addWidget(self.toolbar, 0, 0, 1, 2)
 		self.central_layout.addWidget(filesystem_list, 1, 0)
 		self.central_layout.addWidget(self.defaultview, 1, 1)
 		
