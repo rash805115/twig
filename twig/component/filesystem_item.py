@@ -1,5 +1,4 @@
 import PySide.QtGui as QtGui
-import signals.signals as signals
 import service.globals as global_variables
 import pybookeeping.core.communication.connection as connection
 import pybookeeping.core.operation.commit as commit
@@ -10,7 +9,6 @@ class FilesytemItem(QtGui.QListWidgetItem):
 	def __init__(self, filesystem_info, parent):
 		QtGui.QListWidgetItem.__init__(self, filesystem_info["filesystemId"], parent)
 		self.filesystem_info = filesystem_info
-		self.twig_signal = signals.TwigSignals().twig_signal
 		
 		new_connection = connection.Connection()
 		self.commit = commit.Commit(new_connection, "Temporary Commit Id")

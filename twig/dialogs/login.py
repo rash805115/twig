@@ -1,6 +1,7 @@
 import resources.resource_manager
 import service.globals as global_variables
-from PySide import QtCore, QtGui
+import PySide.QtCore as QtCore
+import PySide.QtGui as QtGui
 
 class LoginDialog(QtGui.QDialog):
 	_dialog_stylesheet = """

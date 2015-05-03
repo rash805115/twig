@@ -5,7 +5,6 @@ import pybookeeping.core.operation.filesystem as filesystem
 import service.globals as global_variables
 import component.filesystem_item as filesystem_item
 import dialogs.add_filesystem as add_filesystem
-import signals.signals as signals
 import json
 import functools
 
@@ -40,10 +39,9 @@ class FilesystemList(QtGui.QListWidget):
 		self.setSortingEnabled(True)
 		self.setStyleSheet(self._stylesheet)
 		self.setFocusPolicy(QtCore.Qt.NoFocus)
-		self.twig_signal = signals.TwigSignals().twig_signal
 		
-		self.twig_signal.add_filesystem.connect(self.create_new)
-		self.twig_signal.view_changed.connect(self.item_changed)
+		global_variables.twig_signal.add_filesystem.connect(self.create_new)
+		global_variables.twig_signal.view_changed.connect(self.item_changed)
 		self.itemSelectionChanged.connect(self.item_changed)
 		
 		self.filesystem = filesystem.Filesystem(connection.Connection())
@@ -81,4 +79,4 @@ class FilesystemList(QtGui.QListWidget):
 		current_item = self.currentItem()
 		if current_item is not None:
 			current_filesytem_info = self.currentItem().filesystem_info
-			self.twig_signal.filesystem_list_changed.emit(current_filesytem_info)
+			global_variables.twig_signal.filesystem_list_changed.emit(current_filesytem_info)

@@ -1,13 +1,12 @@
 import PySide.QtGui as QtGui
 import PySide.QtCore as QtCore
 import resources.resource_manager
-import signals.signals as signals
+import service.globals as global_variables
 
 class Toolbar(QtGui.QToolBar):
 	def __init__(self, widget):
 		QtGui.QToolBar.__init__(self, widget)
 		self.resource_manager = resources.resource_manager.ResourceManager()
-		self.twig_signal = signals.TwigSignals().twig_signal
 		
 		add_filesystem_icon = QtGui.QIcon()
 		add_filesystem_icon.addPixmap(self.resource_manager.get_resource("file"))
@@ -40,4 +39,4 @@ class Toolbar(QtGui.QToolBar):
 		print("quit")
 	
 	def change_view(self, index):
-		self.twig_signal.view_changed.emit(index)
+		global_variables.twig_signal.view_changed.emit(index)

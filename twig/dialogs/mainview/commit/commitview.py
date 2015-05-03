@@ -1,10 +1,10 @@
 import PySide.QtGui as QtGui
 import PySide.QtCore as QtCore
-import signals.signals as signals
-import pybookeeping.core.communication.connection as connection
-import pybookeeping.core.operation.xray as xray
 import dialogs.mainview.commit.directory as directory
 import dialogs.mainview.commit.file as file
+import service.globals as global_variables
+import pybookeeping.core.communication.connection as connection
+import pybookeeping.core.operation.xray as xray
 
 class Entity(QtGui.QGraphicsWidget):
 	def __init__(self, widget):
@@ -110,13 +110,12 @@ class Entity(QtGui.QGraphicsWidget):
 class CommitView(QtGui.QGraphicsView):
 	def __init__(self, widget):
 		QtGui.QGraphicsView.__init__(self, widget)
-		self.twig_signal = signals.TwigSignals().twig_signal
 		
 		self.scene = QtGui.QGraphicsScene()
 		self.setScene(self.scene)
 		self.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
 		
-		self.twig_signal.filesystem_list_changed.connect(self.draw_root)
+		global_variables.twig_signal.filesystem_list_changed.connect(self.draw_root)
 	
 	def draw_root(self, filesystem_info):
 		self.scene.clear()
