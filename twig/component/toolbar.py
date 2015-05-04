@@ -1,5 +1,4 @@
 import PySide.QtGui as QtGui
-import PySide.QtCore as QtCore
 import resources.resource_manager
 import service.globals as global_variables
 
@@ -14,7 +13,6 @@ class Toolbar(QtGui.QToolBar):
 		add_filesystem.setIcon(add_filesystem_icon)
 		add_filesystem.setText("Add Filesystem")
 		add_filesystem.setToolTip("Add Filesystem")
-		add_filesystem.setToolButtonStyle(QtCore.Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
 		add_filesystem.clicked.connect(self.addfilesystem_clicked)
 		
 		quit_program_icon = QtGui.QIcon()
@@ -23,7 +21,6 @@ class Toolbar(QtGui.QToolBar):
 		quit_program.setIcon(quit_program_icon)
 		quit_program.setText("Quit")
 		quit_program.setToolTip("Quit")
-		quit_program.setToolButtonStyle(QtCore.Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
 		quit_program.clicked.connect(self.quitprogram_clicked)
 		
 		self.view_select = QtGui.QComboBox()

@@ -1,4 +1,5 @@
 import PySide.QtGui as QtGui
+import PySide.QtCore as QtCore
 import dialogs.mainview.default.defaultview as defaultview
 import dialogs.mainview.commit.commitview as commitview
 import dialogs.menu.mainwindow_menubar as mainwindow_menubar
@@ -20,20 +21,19 @@ class MainWindow(QtGui.QMainWindow):
 		self.defaultview = defaultview.DefaultView(central_widget)
 		self.commitview = commitview.CommitView(central_widget)
 		
-		mainwindow_menubar.MainWindowMenubar(central_widget)
-		self.toolbar = component.toolbar.Toolbar(central_widget)
+		self.setMenuBar(mainwindow_menubar.MainWindowMenubar(self))
+		self.toolbar = component.toolbar.Toolbar(self)
+		self.addToolBar(QtCore.Qt.TopToolBarArea, self.toolbar)
+		self.setStatusBar(QtGui.QStatusBar(self))
 		filesystem_list = component.filesystem_list.FilesystemList(central_widget)
 		
-		self.central_layout.addWidget(self.toolbar, 0, 0, 1, 2)
-		self.central_layout.addWidget(filesystem_list, 1, 0)
-		self.central_layout.addWidget(self.defaultview, 1, 1)
+		self.central_layout.addWidget(filesystem_list, 0, 0)
+		self.central_layout.addWidget(self.defaultview, 0, 1)
 		
 		self.central_layout.setColumnMinimumWidth(1, 600)
 		self.central_layout.setColumnStretch(1, 2)
 		self.central_layout.setHorizontalSpacing(0)
-		self.central_layout.setRowMinimumHeight(0, 30)
 		
-		self.setStatusBar(QtGui.QStatusBar(self))
 		self.setCentralWidget(central_widget)
 		
 		global_variables.twig_signal.close_mainwindow.connect(self.close_window)
@@ -42,10 +42,10 @@ class MainWindow(QtGui.QMainWindow):
 	def change_view(self, index):
 		if index == 0:
 			self.defaultview.setParent(self)
-			self.central_layout.addWidget(self.defaultview, 1, 1)
+			self.central_layout.addWidget(self.defaultview, 0, 1)
 		elif index == 1:
 			self.commitview.setParent(self)
-			self.central_layout.addWidget(self.commitview, 1, 1)
+			self.central_layout.addWidget(self.commitview, 0, 1)
 	
 	def close_window(self):
 		self.close()

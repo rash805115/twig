@@ -5,7 +5,7 @@ import service.globals as global_variables
 class MainWindowMenubar(QtGui.QMenuBar):
 	def __init__(self, entity):
 		QtGui.QMenuBar.__init__(self, entity)
-		self.setNativeMenuBar(False)
+		self.setNativeMenuBar(True)
 		self.setGeometry(QtCore.QRect(0, 0, 800, 21))
 		
 		twig_menu = QtGui.QMenu(global_variables._app_name, parent = self)
