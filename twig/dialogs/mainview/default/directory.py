@@ -18,6 +18,7 @@ class Directory(QtGui.QLabel):
 	def __init__(self, properties):
 		QtGui.QLabel.__init__(self)
 		self.resource_manager = resources.resource_manager.ResourceManager()
+		self.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
 		self.setToolTip(json.dumps(properties, indent = 8))
 		self.properties = properties
 		
