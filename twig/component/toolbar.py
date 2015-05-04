@@ -4,8 +4,8 @@ import resources.resource_manager
 import service.globals as global_variables
 
 class Toolbar(QtGui.QToolBar):
-	def __init__(self, widget):
-		QtGui.QToolBar.__init__(self, widget)
+	def __init__(self, entity):
+		QtGui.QToolBar.__init__(self, entity)
 		self.resource_manager = resources.resource_manager.ResourceManager()
 		
 		add_filesystem_icon = QtGui.QIcon()

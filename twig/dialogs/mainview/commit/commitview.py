@@ -5,35 +5,36 @@ import dialogs.mainview.commit.file as file
 import service.globals as global_variables
 import pybookeeping.core.communication.connection as connection
 import pybookeeping.core.operation.xray as xray
+import pybookeeping.core.filesystem.structure as structure
 
 class Entity(QtGui.QGraphicsWidget):
-	def __init__(self, widget):
+	def __init__(self, entity):
 		QtGui.QGraphicsWidget.__init__(self)
 		self.offset = 50
-		self.entity = widget
 		
-		self.connect_children(self.entity)
+		children_layout = QtGui.QGraphicsLinearLayout(QtCore.Qt.Vertical)
+		children_layout.setContentsMargins(self.offset, 0, 0, 0)
 		
-		self.children_layout = QtGui.QGraphicsLinearLayout(QtCore.Qt.Vertical)
-		self.children_layout.setContentsMargins(self.offset, 0, 0, 0)
-		
-		if self.entity.__class__.__name__ is "Directory":
-			self.entity.directory_signal.connect(self.toggle_children)
-			self.entity.dir_version_signal.connect(self.toggle_dir_version)
-			self.entity.dir_info_signal.connect(self.show_dir_info)
+		if entity.__class__.__name__ is "Directory":
+			entity.directory_signal.connect(self.toggle_children)
+			entity.dir_version_signal.connect(self.toggle_dir_version)
+			entity.dir_info_signal.connect(self.show_dir_info)
+			
+			for child in entity.children:
+				children_layout.addItem(Entity(child))
 		else:
-			self.entity.file_signal.connect(self.open_file)
-			self.entity.file_version_signal.connect(self.toggle_file_version)
-			self.entity.file_info_signal.connect(self.show_file_info)
+			entity.file_signal.connect(self.open_file)
+			entity.file_version_signal.connect(self.toggle_file_version)
+			entity.file_info_signal.connect(self.show_file_info)
 		
 		self.children_widget = QtGui.QGraphicsWidget()
-		self.children_widget.setLayout(self.children_layout)
+		self.children_widget.setLayout(children_layout)
 		
 		main_layout = QtGui.QGraphicsLinearLayout(QtCore.Qt.Vertical)
 		main_layout.setContentsMargins(0, 0, 0, 0)
 		
 		self.leaf = QtGui.QGraphicsProxyWidget()
-		self.leaf.setWidget(self.entity)
+		self.leaf.setWidget(entity)
 		
 		main_layout.addItem(self.leaf)
 		main_layout.addItem(self.children_widget)
@@ -54,15 +55,9 @@ class Entity(QtGui.QGraphicsWidget):
 	
 	def toggle_children(self, open_directory):
 		if open_directory:
-			for child in self.entity.children:
-				self.children_layout.addItem(Entity(child))
-			
 			self.children_widget.show()
 			self.layout().insertItem(1, self.children_widget)
 		else:
-			for child in self.entity.children:
-				child.set_parent(None)
-				
 			self.layout().removeItem(self.children_widget)
 			self.children_widget.hide()
 		
@@ -88,44 +83,48 @@ class Entity(QtGui.QGraphicsWidget):
 	
 	def show_file_info(self):
 		print("Showing file info")
-	
-	def connect_children(self, parent):
-		parent_nodeid = parent.properties["nodeId"]
-		new_xray = xray.Xray(connection.Connection())
-		children = new_xray.xray_node(parent_nodeid)
-		
-		for child in children:
-			is_directory = False
-			try:
-				child["directoryName"]
-				is_directory = True
-			except KeyError:
-				is_directory = False
-			
-			if is_directory is True:
-				directory.Directory(child).set_parent(parent)
-			else:
-				file.File(child).set_parent(parent)
 
 class CommitView(QtGui.QGraphicsView):
-	def __init__(self, widget):
-		QtGui.QGraphicsView.__init__(self, widget)
+	def __init__(self, entity):
+		QtGui.QGraphicsView.__init__(self, entity)
 		
 		self.scene = QtGui.QGraphicsScene()
 		self.setScene(self.scene)
 		self.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
 		
-		global_variables.twig_signal.filesystem_list_changed.connect(self.draw_root)
+		global_variables.twig_signal.filesystem_list_changed.connect(self.draw)
 	
-	def draw_root(self, filesystem_info):
+	def draw(self, filesystem_info):
 		self.scene.clear()
 		
 		filesystem_rootid = filesystem_info["rootNodeId"]
 		properties = {
-			"directoryName": "Root Directory",
-			"directoryPath": "/",
+			"name": "Root Directory",
+			"path": "/",
 			"nodeId": filesystem_rootid
 		}
-		
 		self.root_directory = directory.Directory(properties)
+		nodes = {properties["path"]: self.root_directory}
+		
+		new_xray = xray.Xray(connection.Connection())
+		remote_xray = new_xray.xray_full_node(filesystem_rootid)
+		local_xray = structure.Structure(filesystem_info["localpath"]).xray("")
+		change_list = new_xray.diff(local_xray, remote_xray)
+		sorted_keys = sorted(list(change_list.keys()), key = lambda x : (x.count("/"), x.split("/")))
+		
+		for key in sorted_keys:
+			is_directory = change_list[key]["directory"]
+			change = change_list[key]["change"]
+			path = change_list[key]["path"]
+			name = change_list[key]["name"]
+			
+			if is_directory:
+				child = directory.Directory(change_list[key])
+			else:
+				child = file.File(change_list[key])
+			
+			#child.change_pixmap(change)
+			child.set_parent(nodes[path])
+			nodes[("/" if path == "/" else (path + "/")) + name] = child
+		
 		self.scene.addItem(Entity(self.root_directory))

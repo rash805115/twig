@@ -3,8 +3,8 @@ import PySide.QtCore as QtCore
 import service.globals as global_variables
 
 class MainWindowMenubar(QtGui.QMenuBar):
-	def __init__(self, widget):
-		QtGui.QMenuBar.__init__(self, widget)
+	def __init__(self, entity):
+		QtGui.QMenuBar.__init__(self, entity)
 		self.setNativeMenuBar(False)
 		self.setGeometry(QtCore.QRect(0, 0, 800, 21))
 		

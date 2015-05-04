@@ -34,8 +34,8 @@ class FilesystemList(QtGui.QListWidget):
 		}
 	"""
 	
-	def __init__(self, widget):
-		QtGui.QListWidget.__init__(self, widget)
+	def __init__(self, entity):
+		QtGui.QListWidget.__init__(self, entity)
 		self.setSortingEnabled(True)
 		self.setStyleSheet(self._stylesheet)
 		self.setFocusPolicy(QtCore.Qt.NoFocus)

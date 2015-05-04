@@ -11,16 +11,13 @@ class FilesytemItem(QtGui.QListWidgetItem):
 		self.filesystem_info = filesystem_info
 		
 		new_connection = connection.Connection()
-		self.commit = commit.Commit(new_connection, "Temporary Commit Id")
+		self.commit = commit.Commit(new_connection, "Name your commit")
 		self.xray = xray.Xray(new_connection)
 	
 	def filesystem_change(self):
 		remote_xray = self.xray.xray_full_node(self.filesystem_info["nodeId"])
 		local_xray = local_structure.Structure(self.filesystem_info["localpath"]).xray("")
 		global_variables.main_window.toolbar.view_select.setCurrentIndex(1)
-		import json
-		print(json.dumps(remote_xray, indent = 8))
-		print(json.dumps(local_xray, indent = 8))
 	
 	def commit(self):
 		pass

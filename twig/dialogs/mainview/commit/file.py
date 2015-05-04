@@ -37,6 +37,18 @@ class File(QtGui.QLabel):
 			self.parent_directory = parent
 			parent.children.append(self)
 	
+	def change_pixmap(self, change_type):
+		if change_type == "modify":
+			pixmap_type = "yellow"
+		elif change_type == "add":
+			pixmap_type = "green"
+		elif change_type == "delete":
+			pixmap_type = "red"
+		elif change_type == "none":
+			pixmap_type = "blue"
+			
+		self.setPixmap(self.resource_manager.get_resource(pixmap_type + "_file"))
+	
 	def open(self):
 		self.file_signal.emit()
 	
@@ -69,4 +81,4 @@ class File(QtGui.QLabel):
 	def paintEvent(self, paint_event):
 		QtGui.QLabel.paintEvent(self, paint_event)
 		painter = QtGui.QPainter(self)
-		painter.drawText(self.pixmap().rect().bottomRight().x(), self.pixmap().rect().bottomRight().y(), self.properties["fileName"])
+		painter.drawText(self.pixmap().rect().bottomRight().x(), self.pixmap().rect().bottomRight().y(), self.properties["name"])

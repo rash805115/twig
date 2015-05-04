@@ -7,10 +7,10 @@ import pybookeeping.core.communication.connection as connection
 import pybookeeping.core.operation.xray as xray
 
 class Entity(QtGui.QGraphicsWidget):
-	def __init__(self, widget):
+	def __init__(self, entity):
 		QtGui.QGraphicsWidget.__init__(self)
 		self.offset = 50
-		self.entity = widget
+		self.entity = entity
 		
 		self.connect_children(self.entity)
 		
