@@ -81,4 +81,4 @@ class File(QtGui.QLabel):
 	def paintEvent(self, paint_event):
 		QtGui.QLabel.paintEvent(self, paint_event)
 		painter = QtGui.QPainter(self)
-		painter.drawText(self.pixmap().rect().bottomRight().x(), self.pixmap().rect().bottomRight().y(), self.properties["name"])
+		painter.drawText(self.pixmap().rect().bottomRight().x() + 5, self.pixmap().rect().bottomRight().y() - 10, self.properties["name"])
