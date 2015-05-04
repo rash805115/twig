@@ -49,7 +49,7 @@ class LoginDialog(QtGui.QDialog):
 		login_logo_label = QtGui.QLabel(self)
 		login_logo_label.setGeometry(QtCore.QRect(220, 30, 201, 101))
 		login_logo_label.setText("Twig Logo")
-		login_logo_label.setPixmap(resource_manager.get_resource("logo", scale = False))
+		login_logo_label.setPixmap(resource_manager.get_resource("logo"))
 		
 		self.setTabOrder(self.username_text, self.password_text)
 		self.setTabOrder(self.password_text, login_button)

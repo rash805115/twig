@@ -9,8 +9,7 @@ class Toolbar(QtGui.QToolBar):
 		self.resource_manager = resources.resource_manager.ResourceManager()
 		
 		add_filesystem_icon = QtGui.QIcon()
-		add_filesystem_icon.addPixmap(self.resource_manager.get_resource("file"))
-		
+		add_filesystem_icon.addPixmap(self.resource_manager.get_resource("filesystem"))
 		add_filesystem = QtGui.QToolButton()
 		add_filesystem.setIcon(add_filesystem_icon)
 		add_filesystem.setText("Add Filesystem")
@@ -18,14 +17,18 @@ class Toolbar(QtGui.QToolBar):
 		add_filesystem.setToolButtonStyle(QtCore.Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
 		add_filesystem.clicked.connect(self.addfilesystem_clicked)
 		
+		quit_program_icon = QtGui.QIcon()
+		quit_program_icon.addPixmap(self.resource_manager.get_resource("exit"))
 		quit_program = QtGui.QToolButton()
+		quit_program.setIcon(quit_program_icon)
 		quit_program.setText("Quit")
 		quit_program.setToolTip("Quit")
+		quit_program.setToolButtonStyle(QtCore.Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
 		quit_program.clicked.connect(self.quitprogram_clicked)
 		
 		self.view_select = QtGui.QComboBox()
-		self.view_select.addItem("Default")
-		self.view_select.addItem("Commit")
+		self.view_select.addItem("Default View")
+		self.view_select.addItem("Commit View")
 		self.view_select.currentIndexChanged.connect(self.change_view)
 		
 		self.addWidget(add_filesystem)

@@ -124,7 +124,7 @@ class CommitView(QtGui.QGraphicsView):
 			else:
 				child = file.File(change_list[key])
 			
-			#child.change_pixmap(change)
+			child.change_pixmap(change)
 			child.set_parent(nodes[path])
 			nodes[("/" if path == "/" else (path + "/")) + name] = child
 		

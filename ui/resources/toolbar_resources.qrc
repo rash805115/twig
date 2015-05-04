@@ -1,0 +1,11 @@
+<RCC>
+  <qresource prefix="toolbar">
+    <file>images/exit.png</file>
+    <file>images/filesystem.png</file>
+    <file>images/permanent_delete.png</file>
+    <file>images/temporary_delete.png</file>
+    <file>images/settings.png</file>
+    <file>images/signout.png</file>
+    <file>images/uploading.png</file>
+  </qresource>
+</RCC>

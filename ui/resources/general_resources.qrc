@@ -1,5 +1,5 @@
 <RCC>
-  <qresource prefix="images">
+  <qresource prefix="general">
     <file>images/logo_transparent.png</file>
   </qresource>
 </RCC>

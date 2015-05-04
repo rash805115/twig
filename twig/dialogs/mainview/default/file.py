@@ -22,7 +22,7 @@ class File(QtGui.QLabel):
 		self.properties = properties
 		
 		self.parent_directory = None
-		self.setPixmap(self.resource_manager.get_resource("file"))
+		self.setPixmap(self.resource_manager.get_resource("blue_file"))
 		self.setStyleSheet(self._stylesheet)
 	
 	def set_parent(self, parent):
@@ -70,4 +70,4 @@ class File(QtGui.QLabel):
 	def paintEvent(self, paint_event):
 		QtGui.QLabel.paintEvent(self, paint_event)
 		painter = QtGui.QPainter(self)
-		painter.drawText(self.pixmap().rect().bottomRight().x() + 5, self.pixmap().rect().bottomRight().y() - 10, self.properties["fileName"])
+		painter.drawText(self.pixmap().rect().bottomRight().x() - 5, self.pixmap().rect().bottomRight().y() - 25, self.properties["fileName"])

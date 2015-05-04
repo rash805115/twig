@@ -1,8 +1,17 @@
 <RCC>
   <qresource prefix="components">
-    <file>images/directory_close_transparent.png</file>
-    <file>images/directory_open_transparent.png</file>
-    <file>images/general_file_transparent.png</file>
-    <file>images/add_filesystem_transparent.png</file>
+    <file>images/blue_directory_close.png</file>
+    <file>images/blue_directory_open.png</file>
+    <file>images/green_directory_close.png</file>
+    <file>images/green_directory_open.png</file>
+    <file>images/yellow_directory_close.png</file>
+    <file>images/yellow_directory_open.png</file>
+    <file>images/red_directory_close.png</file>
+    <file>images/red_directory_open.png</file>
+    
+    <file>images/blue_file.png</file>
+    <file>images/green_file.png</file>
+    <file>images/yellow_file.png</file>
+    <file>images/red_file.png</file>
   </qresource>
 </RCC>

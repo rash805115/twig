@@ -42,13 +42,13 @@ class Directory(QtGui.QLabel):
 			parent.children.append(self)
 	
 	def open(self):
-		self.setPixmap(self.resource_manager.get_resource("directory_open"))
 		self._directory_open = True
+		self.setPixmap(self.resource_manager.get_resource("blue_directory_open"))
 		self.directory_signal.emit(True)
 	
 	def close(self):
-		self.setPixmap(self.resource_manager.get_resource("directory_close"))
 		self._directory_open = False
+		self.setPixmap(self.resource_manager.get_resource("blue_directory_close"))
 		self.directory_signal.emit(False)
 	
 	def show_versions(self):
@@ -87,4 +87,4 @@ class Directory(QtGui.QLabel):
 	def paintEvent(self, paint_event):
 		QtGui.QLabel.paintEvent(self, paint_event)
 		painter = QtGui.QPainter(self)
-		painter.drawText(self.pixmap().rect().bottomRight().x() + 5, self.pixmap().rect().bottomRight().y() - 10, self.properties["directoryName"])
+		painter.drawText(self.pixmap().rect().bottomRight().x() - 5, self.pixmap().rect().bottomRight().y() - 25, self.properties["directoryName"])
