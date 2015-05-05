@@ -1,9 +1,9 @@
 import PySide.QtGui as QtGui
 import PySide.QtCore as QtCore
 import service.globals as global_variables
+from validation.name_validation import NameValidation
 import pybookeeping.core.communication.connection as connection
 import pybookeeping.core.operation.filesystem as filesystem
-from validation.name_validation import NameValidation
 
 class AddFilesystem(QtGui.QDialog):
 	def __init__(self):

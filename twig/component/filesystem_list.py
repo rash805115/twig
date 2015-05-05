@@ -1,10 +1,10 @@
 import PySide.QtGui as QtGui
 import PySide.QtCore as QtCore
-import pybookeeping.core.communication.connection as connection
-import pybookeeping.core.operation.filesystem as filesystem
 import service.globals as global_variables
 import component.filesystem_item as filesystem_item
 import dialogs.add_filesystem as add_filesystem
+import pybookeeping.core.communication.connection as connection
+import pybookeeping.core.operation.filesystem as filesystem
 import json
 import functools
 

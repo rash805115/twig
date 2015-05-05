@@ -34,10 +34,10 @@ class Toolbar(QtGui.QToolBar):
 		self.addWidget(self.view_select)
 	
 	def addfilesystem_clicked(self):
-		print("add")
+		global_variables.twig_signal.add_filesystem.emit()
 	
 	def quitprogram_clicked(self):
-		print("quit")
+		global_variables.twig_signal.close_mainwindow.emit()
 	
 	def change_view(self, index):
 		global_variables.twig_signal.view_changed.emit(index)
