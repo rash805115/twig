@@ -14,7 +14,7 @@ class Entity(QtGui.QGraphicsWidget):
 		
 		children_layout = QtGui.QGraphicsLinearLayout(QtCore.Qt.Vertical)
 		children_layout.setContentsMargins(self.offset, 0, 0, 0)
-		children_layout.setMinimumWidth(200)
+		children_layout.setMinimumWidth(350)
 		
 		if entity.__class__.__name__ is "Directory":
 			entity.directory_signal.connect(self.toggle_children)

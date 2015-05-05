@@ -1,4 +1,5 @@
 import PySide.QtGui as QtGui
+import PySide.QtCore as QtCore
 import service.globals as global_variables
 import pybookeeping.core.communication.connection as connection
 import pybookeeping.core.operation.filesystem as filesystem
@@ -19,7 +20,11 @@ class AddFilesystem(QtGui.QDialog):
 		chosen_path_label = QtGui.QLabel("Chosen Path")
 		self.chosen_path_value_label = QtGui.QLabel()
 		
-		add_cancel_button = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
+		self.add_button = QtGui.QPushButton("Add")
+		cancel_button = QtGui.QPushButton("Cancel")
+		ok_cancel_button = QtGui.QDialogButtonBox(QtCore.Qt.Horizontal)
+		ok_cancel_button.addButton(self.add_button, QtGui.QDialogButtonBox.ButtonRole.AcceptRole)
+		ok_cancel_button.addButton(cancel_button, QtGui.QDialogButtonBox.ButtonRole.RejectRole)
 		
 		layout = QtGui.QGridLayout()
 		layout.addWidget(choose_folder_label, 0, 0)
@@ -28,18 +33,22 @@ class AddFilesystem(QtGui.QDialog):
 		layout.addWidget(self.chosen_path_value_label, 1, 1)
 		layout.addWidget(name_label, 2, 0)
 		layout.addWidget(self.name_lineedit, 2, 1)
-		layout.addWidget(add_cancel_button, 4, 1)
+		layout.addWidget(ok_cancel_button, 4, 1)
 		self.setLayout(layout)
 		
 		choose_folder_button.clicked.connect(self.select_folder)
-		add_cancel_button.accepted.connect(self.commit)
-		add_cancel_button.rejected.connect(self.close)
+		ok_cancel_button.accepted.connect(self.add)
+		ok_cancel_button.rejected.connect(self.close)
 	
 	def select_folder(self):
 		select_directory_dialog = QtGui.QFileDialog.getExistingDirectory(self, "Select a directory", ".")
 		self.chosen_path_value_label.setText(select_directory_dialog)
 	
-	def commit(self):
+	def add(self):
+		self.add_button.setText("Processing...")
+		self.add_button.setEnabled(False)
+		self.add_button.repaint()
+		
 		if not NameValidation.validate_name(self.name_lineedit.text()):
 			QtGui.QMessageBox.critical(self, "ERROR", "Invalid filesystem name!")
 		elif len(self.chosen_path_value_label.text().strip()) == 0:

@@ -1,4 +1,5 @@
 import PySide.QtGui as QtGui
+import PySide.QtCore as QtCore
 import service.globals as global_variables
 from validation.name_validation import NameValidation
 import pybookeeping.core.communication.connection as connection
@@ -18,7 +19,11 @@ class CommitFilesystem(QtGui.QDialog):
 		self.commit_lineedit = QtGui.QLineEdit()
 		self.commit_lineedit.setMaxLength(128)
 		
-		ok_cancel_button = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
+		self.commit_button = QtGui.QPushButton("Commit")
+		cancel_button = QtGui.QPushButton("Cancel")
+		ok_cancel_button = QtGui.QDialogButtonBox(QtCore.Qt.Horizontal)
+		ok_cancel_button.addButton(self.commit_button, QtGui.QDialogButtonBox.ButtonRole.AcceptRole)
+		ok_cancel_button.addButton(cancel_button, QtGui.QDialogButtonBox.ButtonRole.RejectRole)
 		
 		layout = QtGui.QGridLayout()
 		layout.addWidget(commit_label, 0, 0)
@@ -30,6 +35,10 @@ class CommitFilesystem(QtGui.QDialog):
 		ok_cancel_button.rejected.connect(self.close)
 	
 	def commit(self):
+		self.commit_button.setText("Processing...")
+		self.commit_button.setEnabled(False)
+		self.commit_button.repaint()
+		
 		if not NameValidation.validate_commit(self.commit_lineedit.text()):
 			QtGui.QMessageBox.critical(self, "ERROR", "Invalid commit id!")
 		else:
@@ -78,9 +87,7 @@ class CommitFilesystem(QtGui.QDialog):
 						new_file.modify_file(change_list[key]["nodeid"], properties)
 			
 			try:
-				print(new_commit._payload)
 				new_commit.commit()
 				self.done(QtGui.QDialog.Accepted)
 			except ValueError as error:
-				print(error)
 				QtGui.QMessageBox.critical(self, "ERROR", error.args[1]["operation_message"])
