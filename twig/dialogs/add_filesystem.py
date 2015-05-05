@@ -7,6 +7,7 @@ from validation.name_validation import NameValidation
 class AddFilesystem(QtGui.QDialog):
 	def __init__(self):
 		QtGui.QDialog.__init__(self)
+		self.setWindowTitle("Add Filesystem")
 		
 		name_label = QtGui.QLabel("Filesystem Name")
 		self.name_lineedit = QtGui.QLineEdit()
@@ -40,7 +41,7 @@ class AddFilesystem(QtGui.QDialog):
 	
 	def commit(self):
 		if not NameValidation.validate_name(self.name_lineedit.text()):
-			QtGui.QMessageBox.critical(self, "ERROR", "Incorrect filesystem name!")
+			QtGui.QMessageBox.critical(self, "ERROR", "Invalid filesystem name!")
 		elif len(self.chosen_path_value_label.text().strip()) == 0:
 			QtGui.QMessageBox.critical(self, "ERROR", "No directory has been chosen!")
 		else:
@@ -48,7 +49,10 @@ class AddFilesystem(QtGui.QDialog):
 			filesystem_object = filesystem.Filesystem(new_connection)
 			
 			try:
-				filesystem_object.create_filesystem(global_variables._current_user, self.name_lineedit.text(), self.chosen_path_value_label.text())
+				properties = {
+					"localPath": self.chosen_path_value_label.text()
+				}
+				filesystem_object.create_filesystem(global_variables._current_user, self.name_lineedit.text(), properties)
 				self.done(QtGui.QDialog.Accepted)
 			except ValueError as error:
 				QtGui.QMessageBox.critical(self, "ERROR", error.args[1]["operation_message"])

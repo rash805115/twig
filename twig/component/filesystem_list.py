@@ -62,10 +62,10 @@ class FilesystemList(QtGui.QListWidget):
 		
 		item = self.itemAt(event.x(), event.y())
 		if item is None:
-			menu.addAction(QtGui.QAction("Create New Filesystem", menu, triggered = self.create_new))
+			menu.addAction(QtGui.QAction("Add Filesystem", menu, triggered = self.create_new))
 		else:
-			menu.addAction(QtGui.QAction("Show Changes", menu, triggered = functools.partial(item.filesystem_change)))
-			#menu.addAction(QtGui.QAction("Commit", menu, triggered = functools.partial(item.commit)))
+			menu.addAction(QtGui.QAction("Show Changes", menu, triggered = functools.partial(item.filesystem_changes)))
+			menu.addAction(QtGui.QAction("Commit", menu, triggered = functools.partial(item.commit_changes)))
 		
 		menu.exec_(QtGui.QCursor.pos())
 	

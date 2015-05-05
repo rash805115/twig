@@ -26,6 +26,7 @@ class Toolbar(QtGui.QToolBar):
 		self.view_select = QtGui.QComboBox()
 		self.view_select.addItem("Default View")
 		self.view_select.addItem("Commit View")
+		self.view_select.setToolTip("Select View")
 		self.view_select.currentIndexChanged.connect(self.change_view)
 		
 		self.addWidget(add_filesystem)

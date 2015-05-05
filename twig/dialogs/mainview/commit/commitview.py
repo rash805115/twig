@@ -109,7 +109,7 @@ class CommitView(QtGui.QGraphicsView):
 		
 		new_xray = xray.Xray(connection.Connection())
 		remote_xray = new_xray.xray_full_node(filesystem_rootid)
-		local_xray = structure.Structure(filesystem_info["localpath"]).xray("")
+		local_xray = structure.Structure(filesystem_info["localPath"]).xray("")
 		change_list = new_xray.diff(local_xray, remote_xray)
 		sorted_keys = sorted(list(change_list.keys()), key = lambda x : (x.count("/"), x.split("/")))
 		

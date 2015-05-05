@@ -1,23 +1,17 @@
 import PySide.QtGui as QtGui
 import service.globals as global_variables
-import pybookeeping.core.communication.connection as connection
-import pybookeeping.core.operation.commit as commit
-import pybookeeping.core.operation.xray as xray
-import pybookeeping.core.filesystem.structure as local_structure
+import dialogs.commit_filesystem as commit_filesystem
 
 class FilesytemItem(QtGui.QListWidgetItem):
 	def __init__(self, filesystem_info, parent):
 		QtGui.QListWidgetItem.__init__(self, filesystem_info["filesystemId"], parent)
 		self.filesystem_info = filesystem_info
-		
-		new_connection = connection.Connection()
-		self.commit = commit.Commit(new_connection, "Name your commit")
-		self.xray = xray.Xray(new_connection)
 	
-	def filesystem_change(self):
-		remote_xray = self.xray.xray_full_node(self.filesystem_info["nodeId"])
-		local_xray = local_structure.Structure(self.filesystem_info["localpath"]).xray("")
+	def filesystem_changes(self):
 		global_variables.main_window.toolbar.view_select.setCurrentIndex(1)
 	
-	def commit(self):
-		pass
+	def commit_changes(self):
+		commit_dialog = commit_filesystem.CommitFilesystem(self.filesystem_info)
+		if commit_dialog.exec_() == QtGui.QDialog.Accepted:
+			a = {}
+			#send the refresh signal
