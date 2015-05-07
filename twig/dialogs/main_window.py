@@ -3,6 +3,7 @@ import PySide.QtCore as QtCore
 import dialogs.mainview.default.defaultview as defaultview
 import dialogs.mainview.commit.commitview as commitview
 import dialogs.menu.mainwindow_menubar as mainwindow_menubar
+import dialogs.storage.amazons3_storage as amazons3_storage
 import component.filesystem_list
 import component.toolbar
 import service.globals as global_variables
@@ -38,6 +39,7 @@ class MainWindow(QtGui.QMainWindow):
 		
 		global_variables.twig_signal.close_mainwindow.connect(self.close_window)
 		global_variables.twig_signal.view_changed.connect(self.change_view)
+		global_variables.twig_signal.add_amazons3_storage.connect(self.add_amazons3_storage)
 	
 	def change_view(self, index):
 		if index == 0:
@@ -49,3 +51,8 @@ class MainWindow(QtGui.QMainWindow):
 	
 	def close_window(self):
 		self.close()
+	
+	def add_amazons3_storage(self):
+		add_dialog = amazons3_storage.AddAmazonS3Storage()
+		if add_dialog.exec_() == QtGui.QDialog.Accepted:
+			pass

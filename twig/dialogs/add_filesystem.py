@@ -45,15 +45,15 @@ class AddFilesystem(QtGui.QDialog):
 		self.chosen_path_value_label.setText(select_directory_dialog)
 	
 	def add(self):
-		self.add_button.setText("Processing...")
-		self.add_button.setEnabled(False)
-		self.add_button.repaint()
-		
 		if not NameValidation.validate_name(self.name_lineedit.text()):
 			QtGui.QMessageBox.critical(self, "ERROR", "Invalid filesystem name!")
 		elif len(self.chosen_path_value_label.text().strip()) == 0:
 			QtGui.QMessageBox.critical(self, "ERROR", "No directory has been chosen!")
 		else:
+			self.add_button.setText("Processing...")
+			self.add_button.setEnabled(False)
+			self.add_button.repaint()
+			
 			new_connection = connection.Connection()
 			filesystem_object = filesystem.Filesystem(new_connection)
 			

@@ -35,13 +35,13 @@ class CommitFilesystem(QtGui.QDialog):
 		ok_cancel_button.rejected.connect(self.close)
 	
 	def commit(self):
-		self.commit_button.setText("Processing...")
-		self.commit_button.setEnabled(False)
-		self.commit_button.repaint()
-		
 		if not NameValidation.validate_commit(self.commit_lineedit.text()):
 			QtGui.QMessageBox.critical(self, "ERROR", "Invalid commit id!")
 		else:
+			self.commit_button.setText("Processing...")
+			self.commit_button.setEnabled(False)
+			self.commit_button.repaint()
+			
 			new_connection = connection.Connection()
 			new_commit = commit.Commit(new_connection, self.commit_lineedit.text())
 			new_xray = xray.Xray(new_connection)
