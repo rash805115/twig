@@ -2,6 +2,7 @@ import resources.resource_manager
 import service.globals as global_variables
 import PySide.QtCore as QtCore
 import PySide.QtGui as QtGui
+import PySide.QtWebKit as QtWebKit
 
 class LoginDialog(QtGui.QDialog):
 	_dialog_stylesheet = """
@@ -58,6 +59,22 @@ class LoginDialog(QtGui.QDialog):
 		login_button.clicked.connect(self.login)
 	
 	def login(self):
-		if self.username_text.text() == "john" and self.password_text.text() == "aaa":
-			global_variables._current_user = self.username_text.text() 
-			self.done(QtGui.QDialog.Accepted)
+		login_url = (
+			"https://accounts.google.com/o/oauth2/auth?scope=profile&redirect_uri=urn:ietf:wg:oauth:2.0:oob:auto&" 
+			"response_type=code&client_id=250214960321-kmbt9glf164mbmd68jcrj2q44qt7ec0u.apps.googleusercontent.com"
+		)
+		
+		web_dialog = QtGui.QDialog()
+		web_dialog.setMinimumHeight(600)
+		web_dialog.setMinimumWidth(800)
+		web = QtWebKit.QWebView(web_dialog)
+		web.load(QtCore.QUrl(login_url))
+		web_dialog.exec_()
+		
+		web.show()
+		print(web.title())
+# 		local_server.join()
+# 		global_variables._current_user = self.username_text.text()
+# 		self.done(QtGui.QDialog.Accepted)
+		
+		#QtGui.QDesktopServices.openUrl(QtCore.QUrl(login_url))
