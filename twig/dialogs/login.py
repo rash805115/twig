@@ -60,7 +60,7 @@ class LoginDialog(QtGui.QDialog):
 	
 	def login(self):
 		login_url = (
-			"https://accounts.google.com/o/oauth2/auth?scope=profile&redirect_uri=urn:ietf:wg:oauth:2.0:oob:auto&" 
+			"https://accounts.google.com/o/oauth2/auth?scope=email&redirect_uri=urn:ietf:wg:oauth:2.0:oob:auto&" 
 			"response_type=code&client_id=250214960321-kmbt9glf164mbmd68jcrj2q44qt7ec0u.apps.googleusercontent.com"
 		)
 		
@@ -72,7 +72,21 @@ class LoginDialog(QtGui.QDialog):
 		web_dialog.exec_()
 		
 		web.show()
-		print(web.title())
+		message = web.title()
+		
+		if message.find("code=") != -1:
+			auth_code = message[message.find("code=") + 5 : ]
+			import requests
+			payload = "code=" + auth_code + "&client_id=250214960321-kmbt9glf164mbmd68jcrj2q44qt7ec0u.apps.googleusercontent.com&client_secret=-AYzMFGu77bANtqFi0nrvT0N&redirect_uri=urn:ietf:wg:oauth:2.0:oob:auto&grant_type=authorization_code"
+			response = requests.post("https://www.googleapis.com/oauth2/v3/token", headers = {"Content-Type": "application/x-www-form-urlencoded"}, data = payload)
+			response_dict = response.json()
+			
+			response = requests.get("https://www.googleapis.com/plus/v1/people/me", headers = {"Authorization": "Bearer " + response_dict["access_token"]})
+			get_dict = response.json()
+			print(get_dict)
+			self.done(QtGui.QDialog.Accepted)
+		
+		self.done(QtGui.QDialog.Rejected)
 # 		local_server.join()
 # 		global_variables._current_user = self.username_text.text()
 # 		self.done(QtGui.QDialog.Accepted)
