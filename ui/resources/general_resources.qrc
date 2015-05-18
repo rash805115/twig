@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="general">
     <file>images/logo_transparent.png</file>
+    <file>images/google_signin.png</file>
+    <file>images/facebook_signin.gif</file>
   </qresource>
 </RCC>

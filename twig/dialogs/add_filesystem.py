@@ -1,9 +1,8 @@
+import service.globals as global_variables
+import validation.name_validation as name_validation
+import pybookeeping.core.operation.filesystem as filesystem
 import PySide.QtGui as QtGui
 import PySide.QtCore as QtCore
-import service.globals as global_variables
-from validation.name_validation import NameValidation
-import pybookeeping.core.communication.connection as connection
-import pybookeeping.core.operation.filesystem as filesystem
 
 class AddFilesystem(QtGui.QDialog):
 	def __init__(self):
@@ -45,8 +44,9 @@ class AddFilesystem(QtGui.QDialog):
 		self.chosen_path_value_label.setText(select_directory_dialog)
 	
 	def add(self):
-		if not NameValidation.validate_name(self.name_lineedit.text()):
-			QtGui.QMessageBox.critical(self, "ERROR", "Invalid filesystem name!")
+		if not name_validation.NameValidation.validate_name(self.name_lineedit.text()):
+			error_message = "Invalid filesystem name!\nCan only contain letters, numbers, underscore, hyphen, and space."
+			QtGui.QMessageBox.critical(self, "ERROR", error_message)
 		elif len(self.chosen_path_value_label.text().strip()) == 0:
 			QtGui.QMessageBox.critical(self, "ERROR", "No directory has been chosen!")
 		else:
@@ -54,14 +54,13 @@ class AddFilesystem(QtGui.QDialog):
 			self.add_button.setEnabled(False)
 			self.add_button.repaint()
 			
-			new_connection = connection.Connection()
-			filesystem_object = filesystem.Filesystem(new_connection)
+			filesystem_obj = filesystem.Filesystem(global_variables.bookeeping_connection)
+			properties = {
+				"localPath": self.chosen_path_value_label.text()
+			}
 			
-			try:
-				properties = {
-					"localPath": self.chosen_path_value_label.text()
-				}
-				filesystem_object.create_filesystem(global_variables._current_user, self.name_lineedit.text(), properties)
+			status, response = filesystem_obj.create_filesystem(global_variables.userid, self.name_lineedit.text(), properties)
+			if status is True:
 				self.done(QtGui.QDialog.Accepted)
-			except ValueError as error:
-				QtGui.QMessageBox.critical(self, "ERROR", error.args[1]["operation_message"])
+			else:
+				QtGui.QMessageBox.critical(self, "ERROR", response)

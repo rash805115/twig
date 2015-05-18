@@ -7,6 +7,8 @@ import resources.toolbar_resources
 class ResourceManager(metaclass = utilities.singleton.Singleton):
 	_resource_mapping = {
 		"logo": ":/general/images/logo_transparent.png",
+		"google_signin": ":/general/images/google_signin.png",
+		"facebook_signin": ":/general/images/facebook_signin.gif",
 		
 		"blue_directory_close": ":/components/images/blue_directory_close.png",
 		"blue_directory_open": ":/components/images/blue_directory_open.png",

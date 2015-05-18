@@ -1,5 +1,3 @@
-import PySide.QtGui as QtGui
-import PySide.QtCore as QtCore
 import dialogs.mainview.default.defaultview as defaultview
 import dialogs.mainview.commit.commitview as commitview
 import dialogs.menu.mainwindow_menubar as mainwindow_menubar
@@ -7,6 +5,8 @@ import dialogs.storage.amazons3_storage as amazons3_storage
 import component.filesystem_list
 import component.toolbar
 import service.globals as global_variables
+import PySide.QtGui as QtGui
+import PySide.QtCore as QtCore
 
 class MainWindow(QtGui.QMainWindow):
 	def __init__(self):
@@ -14,7 +14,7 @@ class MainWindow(QtGui.QMainWindow):
 		self.resize(800, 600)
 		self.setMinimumHeight(600)
 		self.setMinimumWidth(800)
-		self.setWindowTitle(global_variables._app_name)
+		self.setWindowTitle(global_variables.app_name)
 		
 		central_widget = QtGui.QWidget()
 		self.central_layout = QtGui.QGridLayout(central_widget)

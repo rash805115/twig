@@ -1,11 +1,10 @@
-import PySide.QtGui as QtGui
-import PySide.QtCore as QtCore
 import dialogs.mainview.commit.directory as directory
 import dialogs.mainview.commit.file as file
 import service.globals as global_variables
-import pybookeeping.core.communication.connection as connection
 import pybookeeping.core.operation.xray as xray
 import pybookeeping.core.filesystem.structure as structure
+import PySide.QtGui as QtGui
+import PySide.QtCore as QtCore
 
 class Entity(QtGui.QGraphicsWidget):
 	def __init__(self, entity):
@@ -107,8 +106,8 @@ class CommitView(QtGui.QGraphicsView):
 		self.root_directory = directory.Directory(properties)
 		nodes = {properties["path"]: self.root_directory}
 		
-		new_xray = xray.Xray(connection.Connection())
-		remote_xray = new_xray.xray_full_node(filesystem_rootid)
+		new_xray = xray.Xray(global_variables.bookeeping_connection)
+		remote_xray = new_xray.xray_full_node(filesystem_rootid)[1]
 		local_xray = structure.Structure(filesystem_info["localPath"]).xray("")
 		change_list = new_xray.diff(local_xray, remote_xray)
 		sorted_keys = sorted(list(change_list.keys()), key = lambda x : (x.count("/"), x.split("/")))

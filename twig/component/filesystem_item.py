@@ -1,6 +1,6 @@
-import PySide.QtGui as QtGui
 import service.globals as global_variables
 import dialogs.commit_filesystem as commit_filesystem
+import PySide.QtGui as QtGui
 
 class FilesytemItem(QtGui.QListWidgetItem):
 	def __init__(self, filesystem_info, parent):

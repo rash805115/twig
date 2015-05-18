@@ -1,8 +1,13 @@
 import resources.resource_manager
 import service.globals as global_variables
+import utilities.encryption as encryption
+import utilities.download as download
+import pybookeeping.core.communication.connection as connection
 import PySide.QtCore as QtCore
 import PySide.QtGui as QtGui
 import PySide.QtWebKit as QtWebKit
+import os
+import json
 
 class LoginDialog(QtGui.QDialog):
 	_dialog_stylesheet = """
@@ -10,85 +15,152 @@ class LoginDialog(QtGui.QDialog):
 			background: qconicalgradient(cx:1, cy:0, angle:43.9392, stop:0 rgba(0, 169, 208, 240), stop:1 rgba(255, 255, 255, 255));
 		}
 	"""
-	_text_stylesheet = """
-		background: rgb(255, 255, 255);
-	"""
-	_button_stylesheet = """
-		background: white;
-	"""
 	
 	def __init__(self):
 		QtGui.QDialog.__init__(self)
 		resource_manager = resources.resource_manager.ResourceManager()
+		self.secret_filepath = "./../service/secrets"
+		self.encryption = encryption.Encryption()
 		
-		self.setMinimumWidth(453)
-		self.setMinimumHeight(300)
-		self.setMaximumWidth(453)
-		self.setMaximumHeight(300)
+		self.setMinimumWidth(550)
+		self.setMinimumHeight(180)
+		self.setMaximumWidth(550)
+		self.setMaximumHeight(180)
 		self.setStyleSheet(self._dialog_stylesheet)
 		self.setWindowTitle("Login - Twig")
 		
-		self.username_text = QtGui.QLineEdit(self)
-		self.username_text.setGeometry(QtCore.QRect(30, 140, 391, 31))
-		self.username_text.setStyleSheet(self._text_stylesheet)
-		self.username_text.setMaxLength(128)
-		self.username_text.setPlaceholderText("Username")
-		
-		self.password_text = QtGui.QLineEdit(self)
-		self.password_text.setGeometry(QtCore.QRect(30, 180, 391, 31))
-		self.password_text.setStyleSheet(self._text_stylesheet)
-		self.password_text.setMaxLength(64)
-		self.password_text.setEchoMode(QtGui.QLineEdit.Password)
-		self.password_text.setPlaceholderText("Password")
-		
-		login_button = QtGui.QPushButton(self)
-		login_button.setGeometry(QtCore.QRect(170, 220, 131, 41))
-		login_button.setStyleSheet(self._button_stylesheet)
-		login_button.setText("Login")
-		login_button.setFocus(QtCore.Qt.FocusReason.TabFocusReason)
-		
 		login_logo_label = QtGui.QLabel(self)
-		login_logo_label.setGeometry(QtCore.QRect(220, 30, 201, 101))
+		login_logo_label.setGeometry(QtCore.QRect(350, 40, 201, 101))
 		login_logo_label.setText("Twig Logo")
 		login_logo_label.setPixmap(resource_manager.get_resource("logo"))
 		
-		self.setTabOrder(self.username_text, self.password_text)
-		self.setTabOrder(self.password_text, login_button)
-		self.setTabOrder(login_button, self.username_text)
-		
-		login_button.clicked.connect(self.login)
+		if os.path.exists(self.secret_filepath):
+			with open(self.secret_filepath, "r") as file:
+				contents = file.read()
+				self.secrets = json.loads(contents)
+			
+			pixmap = resource_manager.get_resource("google_signin")
+			google_login_button = QtGui.QPushButton(self)
+			google_login_button.setIcon(QtGui.QIcon(pixmap))
+			google_login_button.setIconSize(pixmap.rect().size())
+			google_login_button.setFixedSize(pixmap.rect().size())
+			google_login_button.move(20, 30)
+			google_login_button.clicked.connect(self.relogin_with_google)
+			
+			user_image = QtGui.QLabel(parent = self)
+			user_image_pixmap = QtGui.QPixmap()
+			user_image_pixmap.loadFromData(download.Download.download(self.secrets["user_image"] + "?sz=40"))
+			user_image.setPixmap(user_image_pixmap)
+			user_image.setToolTip("You are already logged in as " + self.secrets["user_name"])
+			user_image.move(google_login_button.rect().topRight().x() + 20, 37)
+			
+			pixmap = resource_manager.get_resource("facebook_signin")
+			facebook_login_button = QtGui.QPushButton(self)
+			facebook_login_button.setIcon(QtGui.QIcon(pixmap))
+			facebook_login_button.setIconSize(pixmap.rect().size())
+			facebook_login_button.setFixedSize(pixmap.rect().size())
+			facebook_login_button.move(20, 90)
+			facebook_login_button.clicked.connect(self.relogin_with_facebook)
+		else:
+			pixmap = resource_manager.get_resource("google_signin")
+			google_login_button = QtGui.QPushButton(self)
+			google_login_button.setIcon(QtGui.QIcon(pixmap))
+			google_login_button.setIconSize(pixmap.rect().size())
+			google_login_button.setFixedSize(pixmap.rect().size())
+			google_login_button.move(20, 30)
+			google_login_button.clicked.connect(self.login_with_google)
+			
+			pixmap = resource_manager.get_resource("facebook_signin")
+			facebook_login_button = QtGui.QPushButton(self)
+			facebook_login_button.setIcon(QtGui.QIcon(pixmap))
+			facebook_login_button.setIconSize(pixmap.rect().size())
+			facebook_login_button.setFixedSize(pixmap.rect().size())
+			facebook_login_button.move(20, 90)
+			facebook_login_button.clicked.connect(self.login_with_facebook)
 	
-	def login(self):
-		login_url = (
-			"https://accounts.google.com/o/oauth2/auth?scope=email&redirect_uri=urn:ietf:wg:oauth:2.0:oob:auto&" 
-			"response_type=code&client_id=250214960321-kmbt9glf164mbmd68jcrj2q44qt7ec0u.apps.googleusercontent.com"
+	def relogin_with_google(self):
+		userid = self.secrets["userid"]
+		user_name = self.secrets["user_name"]
+		user_image = self.secrets["user_image"]
+		access_token = self.encryption.decrypt(self.secrets["access_token"], global_variables.google_client_secret)
+		refresh_token = self.encryption.decrypt(self.secrets["refresh_token"], global_variables.google_client_secret)
+		
+		global_variables.userid = userid
+		global_variables.user_name = user_name
+		global_variables.user_image = user_image
+		global_variables.google_access_token = access_token
+		global_variables.google_refresh_token = refresh_token
+		
+		self.done(QtGui.QDialog.Accepted)
+	
+	def relogin_with_facebook(self):
+		QtGui.QMessageBox.critical(None, "ERROR", "Facebook Re-Login not yet implemented!")
+	
+	def login_with_google(self):
+		auth_code_url = (
+			"https://accounts.google.com/o/oauth2/auth?"
+			"scope=email&"
+			"redirect_uri=urn:ietf:wg:oauth:2.0:oob:auto&" 
+			"response_type=code&"
+			"client_id=" + global_variables.google_client_id
 		)
 		
 		web_dialog = QtGui.QDialog()
 		web_dialog.setMinimumHeight(600)
 		web_dialog.setMinimumWidth(800)
 		web = QtWebKit.QWebView(web_dialog)
-		web.load(QtCore.QUrl(login_url))
+		web.load(QtCore.QUrl(auth_code_url))
 		web_dialog.exec_()
-		
 		web.show()
+		
 		message = web.title()
-		
-		if message.find("code=") != -1:
-			auth_code = message[message.find("code=") + 5 : ]
-			import requests
-			payload = "code=" + auth_code + "&client_id=250214960321-kmbt9glf164mbmd68jcrj2q44qt7ec0u.apps.googleusercontent.com&client_secret=-AYzMFGu77bANtqFi0nrvT0N&redirect_uri=urn:ietf:wg:oauth:2.0:oob:auto&grant_type=authorization_code"
-			response = requests.post("https://www.googleapis.com/oauth2/v3/token", headers = {"Content-Type": "application/x-www-form-urlencoded"}, data = payload)
-			response_dict = response.json()
+		try:
+			if message.find("code=") == -1:
+				raise KeyError
 			
-			response = requests.get("https://www.googleapis.com/plus/v1/people/me", headers = {"Authorization": "Bearer " + response_dict["access_token"]})
-			get_dict = response.json()
-			print(get_dict)
+			auth_code = message[message.find("code=") + 5 : ]
+			auth_connection = connection.Connection()
+			auth_connection.host = "www.googleapis.com"
+			auth_connection.base = "oauth2/v3/token"
+			auth_connection.https = True
+			auth_connection.headers = {"Content-Type": "application/x-www-form-urlencoded"}
+			auth_connection.timeout = 10
+			payload = (
+				"code=" + auth_code + "&"
+				"client_id=" + global_variables.google_client_id + "&" 
+				"client_secret=" + global_variables.google_client_secret + "&"  
+				"redirect_uri=" + global_variables.google_redirect_uri + "&"
+				"grant_type=" + "authorization_code"
+			)
+			response = auth_connection.post_request("", payload)
+			
+			access_token = response["access_token"]
+			refresh_token = response["refresh_token"]
+			auth_connection.base = "plus/v1/people/me"
+			auth_connection.headers = {"Authorization": "Bearer " + access_token}
+			response = auth_connection.get_request()
+			
+			global_variables.user_image = response["image"]["url"]
+			global_variables.user_name = response["name"]["givenName"] + " " + response["name"]["familyName"]
+			global_variables.google_access_token = access_token
+			global_variables.google_refresh_token = refresh_token
+			for email in response["emails"]:
+				if email["type"] == "account":
+					global_variables.userid = email["value"]
+			
+			with open(self.secret_filepath, "w+") as file:
+				contents = {
+					"userid": global_variables.userid,
+					"user_name": global_variables.user_name,
+					"user_image": response["image"]["url"],
+					"access_token": self.encryption.encrypt(access_token, global_variables.google_client_secret).decode("UTF-8"),
+					"refresh_token": self.encryption.encrypt(refresh_token, global_variables.google_client_secret).decode("UTF-8")
+				}
+				file.write(json.dumps(contents))
+			
 			self.done(QtGui.QDialog.Accepted)
-		
-		self.done(QtGui.QDialog.Rejected)
-# 		local_server.join()
-# 		global_variables._current_user = self.username_text.text()
-# 		self.done(QtGui.QDialog.Accepted)
-		
-		#QtGui.QDesktopServices.openUrl(QtCore.QUrl(login_url))
+		except (KeyError, ValueError):
+			self.done(QtGui.QDialog.Rejected)
+	
+	def login_with_facebook(self):
+		QtGui.QMessageBox.critical(None, "ERROR", "Facebook Login not yet implemented!")

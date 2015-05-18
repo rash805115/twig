@@ -1,10 +1,9 @@
-import PySide.QtGui as QtGui
-import PySide.QtCore as QtCore
 import service.globals as global_variables
 import dialogs.mainview.default.directory as directory
 import dialogs.mainview.default.file as file
-import pybookeeping.core.communication.connection as connection
 import pybookeeping.core.operation.xray as xray
+import PySide.QtGui as QtGui
+import PySide.QtCore as QtCore
 
 class Entity(QtGui.QGraphicsWidget):
 	def __init__(self, entity):
@@ -92,8 +91,8 @@ class Entity(QtGui.QGraphicsWidget):
 	
 	def connect_children(self, parent):
 		parent_nodeid = parent.properties["nodeId"]
-		new_xray = xray.Xray(connection.Connection())
-		children = new_xray.xray_node(parent_nodeid)
+		new_xray = xray.Xray(global_variables.bookeeping_connection)
+		children = new_xray.xray_node(parent_nodeid)[1]
 		
 		for child in children:
 			is_directory = False

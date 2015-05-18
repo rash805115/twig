@@ -1,5 +1,7 @@
 # Eclipse Environment
 .project
 .pydevproject
+twig/service/secrets
+
 __pycache__/
 .settings/

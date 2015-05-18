@@ -1,7 +1,7 @@
-import PySide.QtGui as QtGui
-import PySide.QtCore as QtCore
 import service.globals as global_variables
 import pybookeeping.plugins.storage.supported_storage as supported_storage
+import PySide.QtGui as QtGui
+import PySide.QtCore as QtCore
 
 class MainWindowMenubar(QtGui.QMenuBar):
 	def __init__(self, entity):
@@ -9,7 +9,7 @@ class MainWindowMenubar(QtGui.QMenuBar):
 		self.setNativeMenuBar(True)
 		self.setGeometry(QtCore.QRect(0, 0, 800, 21))
 		
-		twig_menu = QtGui.QMenu(global_variables._app_name, parent = self)
+		twig_menu = QtGui.QMenu(global_variables.app_name, parent = self)
 		twig_menu.addAction(QtGui.QAction("Preferences", twig_menu, triggered = self.preferences_clicked))
 		twig_menu.addSeparator()
 		twig_menu.addAction(QtGui.QAction("Sign Out", twig_menu, triggered = self.signout_clicked))

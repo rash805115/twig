@@ -1,10 +1,9 @@
-import PySide.QtGui as QtGui
-import PySide.QtCore as QtCore
 import service.globals as global_variables
 import component.filesystem_item as filesystem_item
 import dialogs.add_filesystem as add_filesystem
-import pybookeeping.core.communication.connection as connection
 import pybookeeping.core.operation.filesystem as filesystem
+import PySide.QtGui as QtGui
+import PySide.QtCore as QtCore
 import json
 import functools
 
@@ -44,11 +43,11 @@ class FilesystemList(QtGui.QListWidget):
 		global_variables.twig_signal.view_changed.connect(self.item_changed)
 		self.itemSelectionChanged.connect(self.item_changed)
 		
-		self.filesystem = filesystem.Filesystem(connection.Connection())
+		self.filesystem = filesystem.Filesystem(global_variables.bookeeping_connection)
 		self.display_children()
 	
 	def display_children(self):
-		for filesystem_info in self.filesystem.get_all_filesystem(global_variables._current_user):
+		for filesystem_info in self.filesystem.get_all_filesystem(global_variables.userid)[1]:
 			item_tooltip = json.dumps(filesystem_info, indent = 8)
 			item = filesystem_item.FilesytemItem(filesystem_info, self)
 			item.setToolTip(item_tooltip)

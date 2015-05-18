@@ -1,6 +1,6 @@
+import validation.name_validation as name_validation
 import PySide.QtGui as QtGui
 import PySide.QtCore as QtCore
-from validation.name_validation import NameValidation
 
 class AddAmazonS3Storage(QtGui.QDialog):
 	def __init__(self):
@@ -45,8 +45,9 @@ class AddAmazonS3Storage(QtGui.QDialog):
 		ok_cancel_button.rejected.connect(self.close)
 	
 	def add(self):
-		if not NameValidation.validate_name(self.friendly_name_lineedit.text()):
-			QtGui.QMessageBox.critical(self, "ERROR", "Invalid name!")
+		if not name_validation.NameValidation.validate_name(self.friendly_name_lineedit.text()):
+			error_message = "Invalid name!\nCan only contain letters, numbers, underscore, hyphen, and space."
+			QtGui.QMessageBox.critical(self, "ERROR", error_message)
 		elif len(self.amazons3_accesskey_lineedit.text()) == 0:
 			QtGui.QMessageBox.critical(self, "ERROR", "Empty Access Key!")
 		elif len(self.amazons3_secretkey_lineedit.text()) == 0:
